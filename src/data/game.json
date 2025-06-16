@@ -9,14 +9,6 @@
         {
             "item_categories": ["Characters"],
             "random": 1
-        },
-        {
-            "item_categories": ["Campaigns"],
-            "random": 1
-        },
-        {
-            "item_categories": ["Cards"],
-            "random": 10
         }
     ],
     "death_link": false,
