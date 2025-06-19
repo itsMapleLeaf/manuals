@@ -42,13 +42,6 @@
         "requires": "|QP|"
     },
     {
-        "name": "QP: Win a game after bringing 10 unique cards",
-        "category": [
-            "(Character) QP"
-        ],
-        "requires": "|QP|"
-    },
-    {
         "name": "Yuki (Level 1)",
         "category": [
             "(Character) Yuki"
@@ -85,13 +78,6 @@
     },
     {
         "name": "Yuki (Win)",
-        "category": [
-            "(Character) Yuki"
-        ],
-        "requires": "|Yuki|"
-    },
-    {
-        "name": "Yuki: Win a game with Wins",
         "category": [
             "(Character) Yuki"
         ],
@@ -140,13 +126,6 @@
         "requires": "|Aru|"
     },
     {
-        "name": "Aru: Cause Other Players to draw 4+ Cards in one Turn",
-        "category": [
-            "(Character) Aru"
-        ],
-        "requires": "|Aru|"
-    },
-    {
         "name": "Suguri (Level 1)",
         "category": [
             "(Character) Suguri"
@@ -183,13 +162,6 @@
     },
     {
         "name": "Suguri (Win)",
-        "category": [
-            "(Character) Suguri"
-        ],
-        "requires": "|Suguri|"
-    },
-    {
-        "name": "Suguri: Roll a movement of 12 or higher.",
         "category": [
             "(Character) Suguri"
         ],
@@ -238,13 +210,6 @@
         "requires": "|Hime|"
     },
     {
-        "name": "Hime: KO 2 players in a single turn",
-        "category": [
-            "(Character) Hime"
-        ],
-        "requires": "|Hime|"
-    },
-    {
         "name": "Sora (Level 1)",
         "category": [
             "(Character) Sora"
@@ -281,13 +246,6 @@
     },
     {
         "name": "Sora (Win)",
-        "category": [
-            "(Character) Sora"
-        ],
-        "requires": "|Sora|"
-    },
-    {
-        "name": "Sora: KO a Player from 6+ Spaces Away",
         "category": [
             "(Character) Sora"
         ],
@@ -336,13 +294,6 @@
         "requires": "|Marc|"
     },
     {
-        "name": "Marc: KO a Full HP player with x16 Big Rocket",
-        "category": [
-            "(Character) Marc"
-        ],
-        "requires": "|Marc|"
-    },
-    {
         "name": "Fernet (Level 1)",
         "category": [
             "(Character) Fernet"
@@ -379,13 +330,6 @@
     },
     {
         "name": "Fernet (Win)",
-        "category": [
-            "(Character) Fernet"
-        ],
-        "requires": "|Fernet|"
-    },
-    {
-        "name": "Fernet: Complete a Wins Norma of 4 or higher",
         "category": [
             "(Character) Fernet"
         ],
@@ -434,13 +378,6 @@
         "requires": "|Peat|"
     },
     {
-        "name": "Peat: Successfully Evade after using your Hyper",
-        "category": [
-            "(Character) Peat"
-        ],
-        "requires": "|Peat|"
-    },
-    {
         "name": "Kai (Level 1)",
         "category": [
             "(Character) Kai"
@@ -477,13 +414,6 @@
     },
     {
         "name": "Kai (Win)",
-        "category": [
-            "(Character) Kai"
-        ],
-        "requires": "|Kai|"
-    },
-    {
-        "name": "Kai: Complete a Story Mission",
         "category": [
             "(Character) Kai"
         ],
@@ -532,13 +462,6 @@
         "requires": "|Marie Poppo|"
     },
     {
-        "name": "Marie Poppo: KO a player with \"Reverse Attribute Field\"",
-        "category": [
-            "(Character) Marie Poppo"
-        ],
-        "requires": "|Marie Poppo|"
-    },
-    {
         "name": "Tomomo (Level 1)",
         "category": [
             "(Character) Tomomo"
@@ -575,13 +498,6 @@
     },
     {
         "name": "Tomomo (Win)",
-        "category": [
-            "(Character) Tomomo"
-        ],
-        "requires": "|Tomomo|"
-    },
-    {
-        "name": "Tomomo: At any point, be the only standing player.",
         "category": [
             "(Character) Tomomo"
         ],
@@ -630,13 +546,6 @@
         "requires": "|Chicken|"
     },
     {
-        "name": "Chicken: Land on your own Hyper",
-        "category": [
-            "(Character) Chicken"
-        ],
-        "requires": "|Chicken|"
-    },
-    {
         "name": "Robo Ball (Level 1)",
         "category": [
             "(Character) Robo Ball"
@@ -673,13 +582,6 @@
     },
     {
         "name": "Robo Ball (Win)",
-        "category": [
-            "(Character) Robo Ball"
-        ],
-        "requires": "|Robo Ball|"
-    },
-    {
-        "name": "Robo Ball: Obtain 5+ wins in a single game",
         "category": [
             "(Character) Robo Ball"
         ],
@@ -728,13 +630,6 @@
         "requires": "|Seagull|"
     },
     {
-        "name": "Seagull: Play your Hyper and a Battle Card together",
-        "category": [
-            "(Character) Seagull"
-        ],
-        "requires": "|Seagull|"
-    },
-    {
         "name": "Store Manager (Level 1)",
         "category": [
             "(Character) Store Manager"
@@ -771,13 +666,6 @@
     },
     {
         "name": "Store Manager (Win)",
-        "category": [
-            "(Character) Store Manager"
-        ],
-        "requires": "|Store Manager|"
-    },
-    {
-        "name": "Store Manager: KO the field boss",
         "category": [
             "(Character) Store Manager"
         ],
@@ -826,13 +714,6 @@
         "requires": "|Shifu Robot|"
     },
     {
-        "name": "Shifu Robot: KO the field boss",
-        "category": [
-            "(Character) Shifu Robot"
-        ],
-        "requires": "|Shifu Robot|"
-    },
-    {
         "name": "Flying Castle (Level 1)",
         "category": [
             "(Character) Flying Castle"
@@ -869,13 +750,6 @@
     },
     {
         "name": "Flying Castle (Win)",
-        "category": [
-            "(Character) Flying Castle"
-        ],
-        "requires": "|Flying Castle|"
-    },
-    {
-        "name": "Flying Castle: KO the field boss",
         "category": [
             "(Character) Flying Castle"
         ],
@@ -924,13 +798,6 @@
         "requires": "|Syura|"
     },
     {
-        "name": "Syura: KO a player while at 1 HP",
-        "category": [
-            "(Character) Syura"
-        ],
-        "requires": "|Syura|"
-    },
-    {
         "name": "Nanako (Level 1)",
         "category": [
             "(Character) Nanako"
@@ -967,13 +834,6 @@
     },
     {
         "name": "Nanako (Win)",
-        "category": [
-            "(Character) Nanako"
-        ],
-        "requires": "|Nanako|"
-    },
-    {
-        "name": "Nanako: Gain Atleast 3 ATK from your Hyper",
         "category": [
             "(Character) Nanako"
         ],
@@ -1064,13 +924,6 @@
         "requires": "|Saki|"
     },
     {
-        "name": "Saki: KO a player who lands on your Hyper",
-        "category": [
-            "(Character) Saki"
-        ],
-        "requires": "|Saki|"
-    },
-    {
         "name": "Kyousuke (Level 1)",
         "category": [
             "(Character) Kyousuke"
@@ -1107,13 +960,6 @@
     },
     {
         "name": "Kyousuke (Win)",
-        "category": [
-            "(Character) Kyousuke"
-        ],
-        "requires": "|Kyousuke|"
-    },
-    {
-        "name": "Kyousuke: Use 2 Hypers in 1 Game",
         "category": [
             "(Character) Kyousuke"
         ],
@@ -1162,13 +1008,6 @@
         "requires": "|Krilalaris|"
     },
     {
-        "name": "Krilalaris: Increase your Max HP to 8",
-        "category": [
-            "(Character) Krilalaris"
-        ],
-        "requires": "|Krilalaris|"
-    },
-    {
         "name": "Kae (Level 1)",
         "category": [
             "(Character) Kae"
@@ -1205,13 +1044,6 @@
     },
     {
         "name": "Kae (Win)",
-        "category": [
-            "(Character) Kae"
-        ],
-        "requires": "|Kae|"
-    },
-    {
-        "name": "Kae: Roll a 9+ Attack (After Modifiers)",
         "category": [
             "(Character) Kae"
         ],
@@ -1260,13 +1092,6 @@
         "requires": "|Alte|"
     },
     {
-        "name": "Alte: Self-destruct a boss",
-        "category": [
-            "(Character) Alte"
-        ],
-        "requires": "|Alte|"
-    },
-    {
         "name": "Kyoko (Level 1)",
         "category": [
             "(Character) Kyoko"
@@ -1303,13 +1128,6 @@
     },
     {
         "name": "Kyoko (Win)",
-        "category": [
-            "(Character) Kyoko"
-        ],
-        "requires": "|Kyoko|"
-    },
-    {
-        "name": "Kyoko: Survive a match without being KO'd by another player",
         "category": [
             "(Character) Kyoko"
         ],
@@ -1400,13 +1218,6 @@
         "requires": "|Sham|"
     },
     {
-        "name": "Sham: Force a player to fight the boss",
-        "category": [
-            "(Character) Sham"
-        ],
-        "requires": "|Sham|"
-    },
-    {
         "name": "Sherry (Level 1)",
         "category": [
             "(Character) Sherry"
@@ -1443,13 +1254,6 @@
     },
     {
         "name": "Sherry (Win)",
-        "category": [
-            "(Character) Sherry"
-        ],
-        "requires": "|Sherry|"
-    },
-    {
-        "name": "Sherry: KO another player or the field boss with Shield Counter",
         "category": [
             "(Character) Sherry"
         ],
@@ -1540,13 +1344,6 @@
         "requires": "|Star Breaker|"
     },
     {
-        "name": "Star Breaker: Hold 200 or more Stars",
-        "category": [
-            "(Character) Star Breaker"
-        ],
-        "requires": "|Star Breaker|"
-    },
-    {
         "name": "Sweet Breaker (Level 1)",
         "category": [
             "(Character) Sweet Breaker"
@@ -1583,13 +1380,6 @@
     },
     {
         "name": "Sweet Breaker (Win)",
-        "category": [
-            "(Character) Sweet Breaker"
-        ],
-        "requires": "|Sweet Breaker|"
-    },
-    {
-        "name": "Sweet Breaker: Use Melting Memories to flip 3 cards from a single player",
         "category": [
             "(Character) Sweet Breaker"
         ],
@@ -1680,13 +1470,6 @@
         "requires": "|Nath|"
     },
     {
-        "name": "Nath: Reach 3 stacks of Active Extension",
-        "category": [
-            "(Character) Nath"
-        ],
-        "requires": "|Nath|"
-    },
-    {
         "name": "Mimyuu (Level 1)",
         "category": [
             "(Character) Mimyuu"
@@ -1723,13 +1506,6 @@
     },
     {
         "name": "Mimyuu (Win)",
-        "category": [
-            "(Character) Mimyuu"
-        ],
-        "requires": "|Mimyuu|"
-    },
-    {
-        "name": "Mimyuu: Have any player draw Evil Spy Work - Execution off of Passionate Research",
         "category": [
             "(Character) Mimyuu"
         ],
@@ -1778,13 +1554,6 @@
         "requires": "|Tomato|"
     },
     {
-        "name": "Tomato: KO a player within one chapter of them KOing Mimyuu",
-        "category": [
-            "(Character) Tomato"
-        ],
-        "requires": "|Tomato|"
-    },
-    {
         "name": "Kiriko (Level 1)",
         "category": [
             "(Character) Kiriko"
@@ -1821,13 +1590,6 @@
     },
     {
         "name": "Kiriko (Win)",
-        "category": [
-            "(Character) Kiriko"
-        ],
-        "requires": "|Kiriko|"
-    },
-    {
-        "name": "Kiriko: Lower your Max HP to 2",
         "category": [
             "(Character) Kiriko"
         ],
@@ -1876,13 +1638,6 @@
         "requires": "|NoName|"
     },
     {
-        "name": "NoName: KO a player in Head Form",
-        "category": [
-            "(Character) NoName"
-        ],
-        "requires": "|NoName|"
-    },
-    {
         "name": "Ceoreparque (Level 1)",
         "category": [
             "(Character) Ceoreparque"
@@ -1919,13 +1674,6 @@
     },
     {
         "name": "Ceoreparque (Win)",
-        "category": [
-            "(Character) Ceoreparque"
-        ],
-        "requires": "|Ceoreparque|"
-    },
-    {
-        "name": "Ceoreparque: Complete a Norma two consecutive chapters in a row",
         "category": [
             "(Character) Ceoreparque"
         ],
@@ -1974,13 +1722,6 @@
         "requires": "|Miusaki|"
     },
     {
-        "name": "Miusaki: Win a battle where Final Battle is played",
-        "category": [
-            "(Character) Miusaki"
-        ],
-        "requires": "|Miusaki|"
-    },
-    {
         "name": "Yuki (Dangerous) (Level 1)",
         "category": [
             "(Character) Yuki (Dangerous)"
@@ -2023,13 +1764,6 @@
         "requires": "|Yuki (Dangerous)|"
     },
     {
-        "name": "Yuki (Dangerous): Complete a Wins Norma of 4 or higher",
-        "category": [
-            "(Character) Yuki (Dangerous)"
-        ],
-        "requires": "|Yuki (Dangerous)|"
-    },
-    {
         "name": "Tomomo (Casual) (Level 1)",
         "category": [
             "(Character) Tomomo (Casual)"
@@ -2066,13 +1800,6 @@
     },
     {
         "name": "Tomomo (Casual) (Win)",
-        "category": [
-            "(Character) Tomomo (Casual)"
-        ],
-        "requires": "|Tomomo (Casual)|"
-    },
-    {
-        "name": "Tomomo (Casual): Hold 3+ Hypers at Once",
         "category": [
             "(Character) Tomomo (Casual)"
         ],
@@ -2163,13 +1890,6 @@
         "requires": "|Tsih|"
     },
     {
-        "name": "Tsih: Hold 3 Gifts",
-        "category": [
-            "(Character) Tsih"
-        ],
-        "requires": "|Tsih|"
-    },
-    {
         "name": "Tequila (Level 1)",
         "category": [
             "(Character) Tequila"
@@ -2206,13 +1926,6 @@
     },
     {
         "name": "Tequila (Win)",
-        "category": [
-            "(Character) Tequila"
-        ],
-        "requires": "|Tequila|"
-    },
-    {
-        "name": "Tequila: KO another player while you have 1 HP",
         "category": [
             "(Character) Tequila"
         ],
@@ -2633,13 +2346,6 @@
     },
     {
         "name": "Mio (Win)",
-        "category": [
-            "(Character) Mio"
-        ],
-        "requires": "|Mio|"
-    },
-    {
-        "name": "Mio: 50 or more stars from Magical Inferno",
         "category": [
             "(Character) Mio"
         ],
@@ -3774,13 +3480,6 @@
     },
     {
         "name": "Mio (Festive) (Win)",
-        "category": [
-            "(Character) Mio (Festive)"
-        ],
-        "requires": "|Mio (Festive)|"
-    },
-    {
-        "name": "Mio (Festive): Win with Mio's Christmas Cake in your hand",
         "category": [
             "(Character) Mio (Festive)"
         ],

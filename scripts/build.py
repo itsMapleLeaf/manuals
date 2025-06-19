@@ -173,12 +173,12 @@ class OrangeJuiceWorldBuilder(WorldBuilder):
                 requires=character_item,
             )
 
-            if character_info.goal:
-                self.location(
-                    f"{character_name}: {character_info.goal}",
-                    category=[f"(Character) {character_name}"],
-                    requires=character_item,
-                )
+            # if character_info.goal:
+            #     self.location(
+            #         f"{character_name}: {character_info.goal}",
+            #         category=[f"(Character) {character_name}"],
+            #         requires=character_item,
+            #     )
 
         # for card_pack_name, card_pack_dict in content.card_packs.items():
         #     for card_name, card_info in card_pack_dict.items():
