@@ -1,8 +1,8 @@
 {
     "$schema": "https://github.com/ManualForArchipelago/Manual/raw/main/schemas/Manual.game.schema.json",
-    "game": "Super Monkey Ball 2",
+    "game": "Distance",
     "creator": "MapleLeaf",
-    "filler_item_name": "Rotten Banana",
+    "filler_item_name": "corruption error",
     "starting_items": [
         {
             "item_categories": ["Worlds"],
