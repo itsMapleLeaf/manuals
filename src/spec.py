@@ -173,6 +173,21 @@ class DistanceWorldSpec:
     items: list[Item] = []
     locations: list[Location] = []
 
+    filler_item_names = [
+        "corruption error",
+        "out of memory",
+        "access violation",
+        "invalid sequence termination",
+        "segmentation fault",
+        "kernel failure",
+        "version mismatch",
+        "unknown protocol",
+        "syntax error",
+        "calibration failure",
+        "permission denied",
+        "resource limit exceeded",
+    ]
+
     @property
     def item_count(self) -> int:
         return sum(item.get("count") or 0 for item in self.items)
