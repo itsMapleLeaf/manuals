@@ -1,0 +1,66 @@
+{
+    "$schema": "https://raw.githubusercontent.com/ManualForArchipelago/Manual/main/schemas/Manual.options.schema.json",
+    "user": {
+        "min_difficulty": {
+            "type": "Range",
+            "description": "Minimum song difficulty",
+            "range_start": 1,
+            "range_end": 20,
+            "default": 17
+        },
+        "max_difficulty": {
+            "type": "Range",
+            "description": "Maximum song difficulty",
+            "range_start": 1,
+            "range_end": 20,
+            "default": 20
+        },
+        "song_count": {
+            "type": "Range",
+            "description": "Number of songs to include in the core songs pool",
+            "range_start": 5,
+            "range_end": 500,
+            "default": 100
+        },
+        "enable_category_sdvx_original": {
+            "type": "Toggle",
+            "description": "Allow songs in SDVX Original category",
+            "default": true
+        },
+        "enable_category_floor": {
+            "type": "Toggle",
+            "description": "Allow songs in FLOOR category",
+            "default": true
+        },
+        "enable_category_bemani": {
+            "type": "Toggle",
+            "description": "Allow songs in BEMANI category",
+            "default": true
+        },
+        "enable_category_other": {
+            "type": "Toggle",
+            "description": "Allow songs in Other category",
+            "default": true
+        },
+        "enable_category_touhou_arrange": {
+            "type": "Toggle",
+            "description": "Allow songs in Touhou Arrange category",
+            "default": true
+        },
+        "enable_category_vocaloid": {
+            "type": "Toggle",
+            "description": "Allow songs in Vocaloid category",
+            "default": false
+        },
+        "enable_category_pops_anime": {
+            "type": "Toggle",
+            "description": "Allow songs in Pops & Anime category",
+            "default": false
+        },
+        "enable_category_hinabitter_bandmeshi": {
+            "type": "Toggle",
+            "description": "Allow songs in Hinabitter/BandMeshi category",
+            "default": false
+        }
+    }
+}
