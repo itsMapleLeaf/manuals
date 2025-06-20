@@ -333,7 +333,7 @@ class DistanceWorldSpec(WorldSpec):
             campaign_item = self.item(
                 name=f"{campaign_name} [Progressive Campaign]",
                 category="Campaign",
-                count=len(levels),
+                count=int(len(levels) * 1.5),
                 progression=True,
             )
 
