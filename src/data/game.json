@@ -2,7 +2,7 @@
     "$schema": "https://github.com/ManualForArchipelago/Manual/raw/main/schemas/Manual.game.schema.json",
     "game": "Distance",
     "creator": "MapleLeaf",
-    "filler_item_name": "corruption error",
+    "filler_item_name": "If you see this, there's a bug!",
     "starting_items": [
         {
             "item_categories": ["Campaign"],

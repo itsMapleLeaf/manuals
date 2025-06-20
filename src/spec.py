@@ -1,6 +1,20 @@
+from dataclasses import dataclass
 import enum
 import json
-from typing import NotRequired, TypedDict, Unpack
+from typing import Iterable, Literal, NotRequired, Optional, TypedDict, Unpack
+
+
+class CategoryArgs(TypedDict):
+    yaml_option: NotRequired[list[str]]
+    """(Optional) Array of Options that will decide if the items & locations in this category are enabled"""
+
+    hidden: NotRequired[bool]
+    """(Optional) Should this category be Hidden in the client?"""
+
+
+class CategoryData(CategoryArgs):
+    name: str
+    """Name of the category"""
 
 
 class ItemArgs(TypedDict):
@@ -50,12 +64,75 @@ class ItemData(ItemArgs):
     """The unique name of the item. Do not use (), :, or | in the name"""
 
 
+class Requirement:
+    pass
+
+
+@dataclass
+class ItemRequirement(Requirement):
+    subject: str
+    amount: Optional[str] = None
+    is_category: bool = False
+
+    def __str__(self) -> str:
+        output = "|"
+
+        if self.is_category:
+            output += "@"
+
+        output += self.subject
+
+        if self.amount:
+            output += ":" + self.amount
+
+        return output + "|"
+
+
+@dataclass
+class FunctionRequirement(Requirement):
+    name: str
+    input: str
+
+    def __str__(self) -> str:
+        return "%s(%s)" % (self.name, self.input)
+
+
+@dataclass
+class BooleanRequirement(Requirement):
+    operator: Literal["or"] | Literal["and"]
+    members: Iterable[Requirement]
+
+    def __str__(self) -> str:
+        return "(%s)" % f" {self.operator} ".join(map(str, self.members))
+
+
+class Requires:
+    def item(self, item: ItemData, amount: Optional[str | int] = None):
+        return ItemRequirement(
+            item["name"],
+            str(amount) if amount != None else None,
+        )
+
+    def category(self, category: CategoryData, amount: Optional[str | int] = None):
+        return ItemRequirement(
+            category["name"],
+            str(amount) if amount != None else None,
+            is_category=True,
+        )
+
+    def function(self, name: str, input: str):
+        return FunctionRequirement(name, input)
+
+    def all_of(self, *items: Requirement):
+        return BooleanRequirement("and", items)
+
+    def any_of(self, *items: Requirement):
+        return BooleanRequirement("or", items)
+
+
 class LocationArgs(TypedDict):
     category: NotRequired[str | list[str]]
     """(Optional) A list of categories to be applied to this location."""
-
-    requires: NotRequired[str]
-    """(Optional) A boolean logic string that describes the required items, counts, etc. needed to reach this location."""
 
     region: NotRequired[str]
     """(Optional) The name of the region this location is part of."""
@@ -90,18 +167,8 @@ class LocationData(LocationArgs):
     name: str
     """The unique name of the location."""
 
-
-class CategoryArgs(TypedDict):
-    yaml_option: NotRequired[list[str]]
-    """(Optional) Array of Options that will decide if the items & locations in this category are enabled"""
-
-    hidden: NotRequired[bool]
-    """(Optional) Should this category be Hidden in the client?"""
-
-
-class CategoryData(CategoryArgs):
-    name: str
-    """Name of the category"""
+    requires: NotRequired[str]
+    """(Optional) A boolean logic string that describes the required items, counts, etc. needed to reach this location."""
 
 
 class WorldSpec:
@@ -118,8 +185,17 @@ class WorldSpec:
         self.items += [item]
         return item
 
-    def location(self, name: str, **kwargs: Unpack[LocationArgs]) -> LocationData:
+    def location(
+        self,
+        name: str,
+        requires: Optional[str | Requirement] = None,
+        **kwargs: Unpack[LocationArgs],
+    ) -> LocationData:
         location = LocationData(name=name, **kwargs)
+
+        if requires != None:
+            location["requires"] = str(requires)
+
         self.locations += [location]
         return location
 
@@ -213,7 +289,7 @@ class DistanceWorldSpec(WorldSpec):
     }
 
     filler_item_names = [
-        # "corruption error",
+        "corruption error",
         "out of memory",
         "access violation",
         "invalid sequence termination",
@@ -225,9 +301,12 @@ class DistanceWorldSpec(WorldSpec):
         "calibration failure",
         "permission denied",
         "resource limit exceeded",
+        "fatal exception",
     ]
 
     def __init__(self) -> None:
+        requires = Requires()
+
         for set_name, levels in self.arcade_level_sets.items():
             for level_name in levels:
                 level_item = self.item(
@@ -240,7 +319,7 @@ class DistanceWorldSpec(WorldSpec):
                     self.location(
                         name=f"{level_name} - {medal} Medal [{set_name}]",
                         category=f"(Arcade: {set_name}) {level_name}",
-                        requires=f"|{level_item['name']}|",
+                        requires=requires.item(level_item),
                     )
 
         campaign_completion_item = self.item(
@@ -262,7 +341,7 @@ class DistanceWorldSpec(WorldSpec):
                 campaign_level_location = self.location(
                     name=f"{level_name} [{campaign_name}]",
                     category=f"(Campaign: {campaign_name}) {level_name}",
-                    requires=f"|{campaign_item['name']}:{level_index + 1}|",
+                    requires=requires.item(campaign_item, level_index + 1),
                 )
 
                 if level_index == len(levels) - 1:
@@ -272,7 +351,7 @@ class DistanceWorldSpec(WorldSpec):
 
         self.location(
             name="All Campaigns Completed",
-            requires=f"|{campaign_completion_item['name']}:all|",
+            requires=requires.item(campaign_completion_item, "all"),
             victory=True,
         )
 
