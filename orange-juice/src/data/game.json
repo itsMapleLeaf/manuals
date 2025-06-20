@@ -1,0 +1,16 @@
+{
+    "$schema": "https://github.com/ManualForArchipelago/Manual/raw/main/schemas/Manual.game.schema.json",
+    "game": "OrangeJuice_dev",
+    "creator": "MapleLeaf",
+
+    "filler_item_name": "Oops, all Poppo!",
+
+    "starting_items": [
+        {
+            "item_categories": ["Characters"],
+            "random": 1
+        }
+    ],
+    "death_link": false,
+    "starting_index": 1
+}

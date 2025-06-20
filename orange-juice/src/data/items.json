@@ -1,0 +1,727 @@
+[
+    {
+        "name": "QP",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Yuki",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Aru",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Suguri",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Hime",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Sora",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Marc",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Fernet",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Peat",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Kai",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Marie Poppo",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Tomomo",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Chicken",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Robo Ball",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Seagull",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Store Manager",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Shifu Robot",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Flying Castle",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Syura",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Nanako",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "QP (Dangerous)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Saki",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Kyousuke",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Krilalaris",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Kae",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Alte",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Kyoko",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Marie Poppo (Mixed)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Sham",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Sherry",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Sora (Military)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Star Breaker",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Sweet Breaker",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Aru (Scramble)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Nath",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Mimyuu",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Tomato",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Kiriko",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "NoName",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Ceoreparque",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Miusaki",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Yuki (Dangerous)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Tomomo (Casual)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Suguri (Ver.2)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Tsih",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Tequila",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Mei",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Natsumi",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Nico",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Arthur",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Iru",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Mira",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Cuties",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Yuuki",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Islay",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Mio",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Suguri (46 Billion Years)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Sumika",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Ellie",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Lulu",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Marc (Pilot)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Alicianrone",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Teotoratta",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Arnelle",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Maynie",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Kyupita",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Chris",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Halena",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Cook",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Lone Rider",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Merchant",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Hime (Moonlight)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Fernet (Noble)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Malt",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Mescal",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Shifu",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Hoshino Reika",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Watty",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Pomeranius",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Sweet Creator",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Saki (Sweet Maker)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Natsumi (Sweet Blogger)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Mio (Festive)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Krilalaris (Pajamas)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Mimyuu (Jailbird)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Mother Poppo",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Dark Lulu",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Hyper Ellie",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Kai (Hero)",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Bourbon",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Grain",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Poyo",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Chuu",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Haruka",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "Kanata",
+        "progression": true,
+        "category": [
+            "Characters"
+        ]
+    },
+    {
+        "name": "100 Oranges",
+        "progression": true,
+        "filler": true,
+        "count": 1,
+        "value": {
+            "oranges": 100
+        },
+        "category": [
+            "Oranges"
+        ]
+    },
+    {
+        "name": "50 Oranges",
+        "progression": true,
+        "filler": true,
+        "count": 2,
+        "value": {
+            "oranges": 50
+        },
+        "category": [
+            "Oranges"
+        ]
+    },
+    {
+        "name": "25 Oranges",
+        "progression": true,
+        "filler": true,
+        "count": 4,
+        "value": {
+            "oranges": 25
+        },
+        "category": [
+            "Oranges"
+        ]
+    },
+    {
+        "name": "10 Oranges",
+        "progression": true,
+        "filler": true,
+        "count": 10,
+        "value": {
+            "oranges": 10
+        },
+        "category": [
+            "Oranges"
+        ]
+    },
+    {
+        "name": "5 Oranges",
+        "progression": true,
+        "filler": true,
+        "count": 20,
+        "value": {
+            "oranges": 5
+        },
+        "category": [
+            "Oranges"
+        ]
+    }
+]
