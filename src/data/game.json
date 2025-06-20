@@ -5,8 +5,12 @@
     "filler_item_name": "corruption error",
     "starting_items": [
         {
-            "item_categories": ["Worlds"],
+            "item_categories": ["Campaign"],
             "random": 1
+        },
+        {
+            "item_categories": ["Arcade"],
+            "random": 3
         }
     ],
     "death_link": false
