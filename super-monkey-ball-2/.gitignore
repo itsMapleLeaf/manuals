@@ -1,0 +1,6 @@
+**/__pycache__
+.vscode/
+.vs/
+/*.code-workspace
+.idea
+/dist/
