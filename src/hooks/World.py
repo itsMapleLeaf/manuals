@@ -30,11 +30,20 @@ import logging
 ## The fill_slot_data method will be used to send data to the Manual client for later use, like deathlink.
 ########################################################################################
 
-
+campaign_item_names = [
+    DistanceWorldSpec.get_campaign_item_name(campaign_name)
+    for campaign_name in DistanceWorldSpec.campaigns.keys()
+]
 
 # Use this function to change the valid filler items to be created to replace item links or starting items.
 # Default value is the `filler_item_name` from game.json
 def hook_get_filler_item_name(world: World, multiworld: MultiWorld, player: int) -> str | bool:
+    # add a chance for a filler to be extra progression,
+    # so the amount of progression items in the world scales with the filler space
+    if world.random.random() < 0.15:
+        return world.random.choice(campaign_item_names)
+
+    # randomize filler names
     return world.random.choice(DistanceWorldSpec.filler_item_names)
 
 # Called before regions and locations are created. Not clear why you'd want this, but it's here. Victory location is included, but Victory event is not placed yet.

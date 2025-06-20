@@ -304,6 +304,10 @@ class DistanceWorldSpec(WorldSpec):
         "fatal exception",
     ]
 
+    @staticmethod
+    def get_campaign_item_name(campaign_name: str):
+        return f"{campaign_name} [Progressive Campaign]"
+
     def __init__(self) -> None:
         requires = Requires()
 
@@ -331,9 +335,9 @@ class DistanceWorldSpec(WorldSpec):
 
         for campaign_name, levels in self.campaigns.items():
             campaign_item = self.item(
-                name=f"{campaign_name} [Progressive Campaign]",
+                name=self.get_campaign_item_name(campaign_name),
                 category="Campaign",
-                count=int(len(levels) * 1.5),
+                count=len(levels),
                 progression=True,
             )
 
