@@ -38,7 +38,7 @@ It also has a script `fetch_songs.py` to fetch the full list of songs in the gam
 - [Python](https://python.org)
 - [uv](https://docs.astral.sh/uv/#installation)
 
-You may need to install additional dependencies to run the legacy manual-specific scripts.
+You may need to install additional dependencies through uv or pip to run the legacy manual-specific scripts.
 
 ### Scripts
 
