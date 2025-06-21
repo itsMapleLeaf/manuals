@@ -5,7 +5,8 @@ import shutil
 from dataclasses_json import DataClassJsonMixin
 from tap import Tap
 
-from ..lib.constants import MANUALS, PROJECT_ROOT
+from ..lib.manuals import MANUALS
+from ..lib.paths import LIB_FOLDER, PROJECT_ROOT
 
 
 @dataclass
@@ -18,7 +19,7 @@ class ArgumentParser(Tap):
     manual: str
 
     def configure(self) -> None:
-        self.add_argument("manual", choices=MANUALS)
+        self.add_argument("manual", choices=[name for (name, _) in MANUALS])
 
 
 def copytree_print(source: str | Path, destination: str | Path, *args, **kwargs):
@@ -30,37 +31,30 @@ def copytree_print(source: str | Path, destination: str | Path, *args, **kwargs)
 
 parser = ArgumentParser(prog="mkworld", description="Generates a manual .apworld file")
 args = parser.parse_args()
-
-manual_folder = PROJECT_ROOT / args.manual
-manual_src_folder = manual_folder / Path("src")
-manual_dist_folder = manual_folder / Path("dist")
+manual = MANUALS[args.manual]
 
 apworld_output_folder = Path(
     os.getenv("OUTPUT_FOLDER") or "C:/ProgramData/Archipelago/custom_worlds"
 )
 
-game_info = GameInfo.from_json(
-    (manual_src_folder / "data/game.json").read_text("utf-8")
-)
+game_info = GameInfo.from_json((manual.data_folder / "game.json").read_text("utf-8"))
 world_name = f"manual_{game_info.game}_{game_info.creator}"
 
-apworld_temp_contents_folder = manual_dist_folder / world_name
+apworld_temp_contents_folder = manual.dist / world_name
 
 if apworld_temp_contents_folder.exists():
     shutil.rmtree(apworld_temp_contents_folder)
 
-copytree_print(manual_src_folder, apworld_temp_contents_folder)
+copytree_print(manual.src, apworld_temp_contents_folder)
 
-for entry in os.listdir(PROJECT_ROOT / "lib"):
+for entry in os.listdir(LIB_FOLDER):
     copytree_print(
-        PROJECT_ROOT / "lib" / entry,
+        LIB_FOLDER / entry,
         apworld_temp_contents_folder / entry,
         dirs_exist_ok=True,
     )
 
-output_zip = shutil.make_archive(
-    world_name, "zip", root_dir=manual_dist_folder, base_dir="."
-)
+output_zip = shutil.make_archive(world_name, "zip", root_dir=manual.dist, base_dir=".")
 apworld_final_destination_fox_only_no_items = (
     apworld_output_folder / f"{world_name}.apworld"
 )
