@@ -16,7 +16,7 @@ Some of the manuals use their own old ad-hoc generation code written before I pu
 
 ### [Super Monkey Ball 2](./manuals/super-monkey-ball-2/)
 
-⚙️ Can be built with [`mkworld`](#mkworld), but the source does not use the new APIs
+✅ Fully refactored
 
 ### [100% Orange Juice](./manuals/orange-juice/)
 
