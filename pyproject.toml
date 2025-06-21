@@ -6,5 +6,6 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "dataclasses-json>=0.6.7",
+    "gitpython>=3.1.44",
     "typed-argument-parser>=1.10.1",
 ]
