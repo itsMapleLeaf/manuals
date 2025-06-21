@@ -79,10 +79,10 @@ uv -m scripts.mkworld distance
 
 The [`mkworld`](#mkworld) script copies files inside the `lib` folder into the world's source folder before generating its .apworld. If you have a file at `lib/util.py`, that will get copied to the root folder in the .apworld, e.g. at `manual_Distance_MapleLeaf/util.py`.
 
-Archipelago requires using relative imports within worlds. For type checking, you can add a `.pyi` file that re-exports from the lib folder, which will get overwritten on build:
+Archipelago requires using relative imports within worlds. For type checking, you can add a `.py` file that re-exports from the lib folder, which will get overwritten on build:
 
 ```py
-# manuals/distance/src/world_spec/__init__.pyi
+# manuals/distance/src/world_spec/__init__.py
 from .....lib.world_spec import *
 ```
 
@@ -91,6 +91,8 @@ from .....lib.world_spec import *
 # (ℹ️ this repo configures this in .vscode/settings.json)
 from lib.world_spec import *
 ```
+
+> This is slightly gross, but it's the best way I could think of to accomplish code sharing, so meh
 
 ### Testing
 
