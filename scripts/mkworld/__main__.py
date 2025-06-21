@@ -21,6 +21,13 @@ class ArgumentParser(Tap):
         self.add_argument("manual", choices=MANUALS)
 
 
+def copytree_print(source: str | Path, destination: str | Path, *args, **kwargs):
+    relative_source = Path(source).relative_to(PROJECT_ROOT)
+    relative_destination = Path(destination).relative_to(PROJECT_ROOT)
+    print(f"[copytree] {relative_source} -> {relative_destination}")
+    shutil.copytree(source, destination, *args, **kwargs)
+
+
 parser = ArgumentParser(prog="mkworld", description="Generates a manual .apworld file")
 args = parser.parse_args()
 
@@ -42,7 +49,14 @@ apworld_temp_contents_folder = manual_dist_folder / world_name
 if apworld_temp_contents_folder.exists():
     shutil.rmtree(apworld_temp_contents_folder)
 
-shutil.copytree(manual_src_folder, apworld_temp_contents_folder)
+copytree_print(manual_src_folder, apworld_temp_contents_folder)
+
+for entry in os.listdir(PROJECT_ROOT / "lib"):
+    copytree_print(
+        PROJECT_ROOT / "lib" / entry,
+        apworld_temp_contents_folder / entry,
+        dirs_exist_ok=True,
+    )
 
 output_zip = shutil.make_archive(
     world_name, "zip", root_dir=manual_dist_folder, base_dir="."
