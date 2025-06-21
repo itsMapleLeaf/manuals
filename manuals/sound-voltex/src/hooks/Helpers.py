@@ -1,6 +1,6 @@
 from typing import Optional, TYPE_CHECKING, cast
-from BaseClasses import MultiWorld, Item, Location
-from .Globals import PLAYER_SONG_LISTS
+from BaseClasses import MultiWorld
+from ..Globals import PLAYER_SONG_LIBRARIES
 
 if TYPE_CHECKING:
     from ..Items import ManualItem
@@ -25,7 +25,10 @@ def before_is_item_enabled(multiworld: MultiWorld, player: int, item: "ManualIte
         song_identifier = categories[1]
         # if song_identifier in PLAYER_SONG_LISTS[player]:
         #     print("enabled item:", item_dict['name'])
-        return song_identifier in PLAYER_SONG_LISTS[player]
+        return any(
+            song_identifier == song.identifier
+            for song in PLAYER_SONG_LIBRARIES[player].chosen_songs
+        )
 
     return None
 
@@ -43,6 +46,9 @@ def before_is_location_enabled(multiworld: MultiWorld, player: int, location: "M
         song_identifier = categories[1]
         # if song_identifier in PLAYER_SONG_LISTS[player]:
         #     print("enabled location:", location_dict['name'])
-        return song_identifier in PLAYER_SONG_LISTS[player]
+        return any(
+            song_identifier == song.identifier
+            for song in PLAYER_SONG_LIBRARIES[player].chosen_songs
+        )
 
     return None

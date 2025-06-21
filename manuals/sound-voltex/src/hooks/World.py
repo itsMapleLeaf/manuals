@@ -1,24 +1,23 @@
-from typing import Any, cast
+from typing import cast
 
 # Object classes from AP core, to represent an entire MultiWorld and this individual World that's part of it
-from .Globals import PLAYER_SONG_LISTS
+from ..Globals import PLAYER_SONG_LIBRARIES
 from worlds.AutoWorld import World
 from BaseClasses import MultiWorld, CollectionState, Item
 
 # Object classes from Manual -- extending AP core -- representing items and locations that are used in generation
 from ..Items import ManualItem
-from ..Locations import ManualLocation
 
 # Raw JSON data from the Manual apworld, respectively:
 #          data/game.json, data/items.json, data/locations.json, data/regions.json
 #
-from ..Data import convert_to_list, game_table, item_table, location_table, region_table
 
 # These helper methods allow you to determine if an option has been set, or what its value is, for any player in the multiworld
-from ..Helpers import is_option_enabled, get_option_value, format_state_prog_items_key, ProgItemsCat, load_data_file
+from ..Helpers import get_option_value
 
 # calling logging.info("message") anywhere below in this file will output the message to both console and log file
-import logging
+
+from ..songs import SongLibrary
 
 ########################################################################################
 ## Order of method calls when the world generates:
@@ -39,102 +38,18 @@ def hook_get_filler_item_name(world: World, multiworld: MultiWorld, player: int)
 
 # Called before regions and locations are created. Not clear why you'd want this, but it's here. Victory location is included, but Victory event is not placed yet.
 def before_create_regions(world: World, multiworld: MultiWorld, player: int):
-    song_count = cast(int, get_option_value(multiworld, player, "song_count"))
-    min_difficulty = cast(int, get_option_value(multiworld, player, "min_difficulty"))
-    max_difficulty = cast(int, get_option_value(multiworld, player, "max_difficulty"))
-
-    group_names_by_category_option = {
-        "enable_category_sdvx_original": "SDVX Original",
-        "enable_category_floor": "FLOOR",
-        "enable_category_bemani": "BEMANI",
-        "enable_category_other": "Other",
-        "enable_category_touhou_arrange": "Touhou Arrange",
-        "enable_category_vocaloid": "Vocaloid",
-        "enable_category_pops_anime": "Pops & Anime",
-        "enable_category_hinabitter_bandmeshi": "Hinabitter♪/BandMeshi♪",
-    }
-
-    song_library: list[dict] = convert_to_list(load_data_file("songs.json"), 'data')
-
-    playable_songs: list[dict] = []
-    boss_songs: list[str] = []
-
-    for song in song_library:
-        song_charts: dict[str, int] = song.get("charts", {})
-        is_boss = False
-
-        for chart in song_charts:
-            difficulty = song_charts[chart]
-            if difficulty >= 20:
-                is_boss = True
-                break
-
-        if is_boss:
-            boss_songs.append(song["identifier"])
-        else:
-            playable_songs.append(song)
-
-    navigator_song_names: dict[str, list[str]] = load_data_file("navigators.json")
-    allowed_navigator_songs: dict[str, list[str]] = {}
-    for navigator in navigator_song_names:
-        allowed_navigator_songs[navigator] = []
-
-    allowed_songs: list[str] = []
-
-    for song in playable_songs:
-        song_charts: dict[str, int] = song.get("charts", {})
-        has_valid_difficulty = False
-        for chart in song_charts:
-            difficulty = song_charts[chart]
-            if min_difficulty <= difficulty <= max_difficulty:
-                has_valid_difficulty = True
-                break
-
-        song_groups: list[str] = song.get("groups", [])
-        has_valid_category = False
-        for category_option_name in group_names_by_category_option:
-            is_category_enabled = cast(bool,
-                get_option_value(multiworld, player, category_option_name))
-            if not is_category_enabled: continue
-
-            group_name = group_names_by_category_option[category_option_name]
-            if group_name in song_groups:
-                has_valid_category = True
-                break
-
-        is_valid = has_valid_difficulty and has_valid_category
-        if not is_valid:
-            continue
-
-        is_navigator_song = False
-        for navigator in navigator_song_names:
-            if song['title'] in navigator_song_names[navigator]:
-                allowed_navigator_songs[navigator].append(song['identifier'])
-                is_navigator_song = True
-                break
-
-        if not is_navigator_song:
-            allowed_songs.append(song['identifier'])
-
-    PLAYER_SONG_LISTS[player] = []
-
-    for navigator in allowed_navigator_songs:
-        current_navigator_songs = allowed_navigator_songs[navigator]
-        chosen_navigator_songs = world.random.sample(current_navigator_songs, k = min(5, len(current_navigator_songs)))
-        # print("chosen_navigator_songs:")
-        # print("\n".join(chosen_navigator_songs), len(chosen_navigator_songs))
-        PLAYER_SONG_LISTS[player].extend(chosen_navigator_songs)
-
-    chosen_allowed_songs = world.random.sample(allowed_songs, k = min(song_count, len(allowed_songs)))
-    # print("chosen_allowed_songs:")
-    # print("\n".join(chosen_allowed_songs), len(chosen_allowed_songs))
-    PLAYER_SONG_LISTS[player].extend(chosen_allowed_songs)
-
-    chosen_boss_songs = world.random.sample(boss_songs, k = min(3, len(boss_songs)))
-    # print("chosen_boss_songs:")
-    # print("\n".join(chosen_boss_songs), len(chosen_boss_songs))
-    PLAYER_SONG_LISTS[player].extend(chosen_boss_songs)
-
+    PLAYER_SONG_LIBRARIES[player] = SongLibrary(
+        multiworld=multiworld,
+        world=world,
+        player=player,
+        chosen_song_count=cast(int, get_option_value(multiworld, player, "song_count")),
+        min_difficulty=cast(
+            int, get_option_value(multiworld, player, "min_difficulty")
+        ),
+        max_difficulty=cast(
+            int, get_option_value(multiworld, player, "max_difficulty")
+        ),
+    )
 
 
 # Called after regions and locations are created, in case you want to see or modify that information. Victory location is included.
