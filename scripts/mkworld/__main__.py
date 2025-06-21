@@ -19,7 +19,7 @@ class ArgumentParser(Tap):
     manual: str
 
     def configure(self) -> None:
-        self.add_argument("manual", choices=[name for (name, _) in MANUALS])
+        self.add_argument("manual", choices=MANUALS.keys())
 
 
 def copytree_print(source: str | Path, destination: str | Path, *args, **kwargs):
