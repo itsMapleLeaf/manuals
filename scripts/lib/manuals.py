@@ -19,7 +19,7 @@ class ManualDefinition:
 
     @property
     def data_folder(self) -> Path:
-        return self.root / "data"
+        return self.src / "data"
 
     @property
     def dist(self) -> Path:
