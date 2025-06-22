@@ -33,10 +33,21 @@ python -m scripts.build
 
 It also has a script `fetch_songs.py` to fetch the full list of songs in the game. You shouldn't have to run this; the song list is committed (see [`data/songs.json`](./manuals/sound-voltex/src/data/songs.json)), and they don't update often.
 
-### Requirements
+### Setup
 
-- [Python](https://python.org)
-- [uv](https://docs.astral.sh/uv/#installation)
+1. Install the following:
+
+   - [Python](https://python.org)
+   - [uv](https://docs.astral.sh/uv/#installation)
+
+1. Run `uv sync`
+
+1. Install Archipelago dependencies:
+
+   ```sh
+   cd Archipelago
+   uv run setup.py
+   ```
 
 You may need to install additional dependencies through uv or pip to run the legacy manual-specific scripts.
 
