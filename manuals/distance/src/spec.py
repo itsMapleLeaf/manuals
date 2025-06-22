@@ -118,7 +118,7 @@ class DistanceWorldSpec(WorldSpec):
                 for medal in ["Gold", "Diamond"]:
                     self.location(
                         name=f"{level_name} - {medal} Medal [{set_name}]",
-                        category=f"(Arcade: {set_name}) {level_name}",
+                        category=f"Arcade: {set_name}",
                         requires=requires.item(level_item),
                     )
 
@@ -140,7 +140,7 @@ class DistanceWorldSpec(WorldSpec):
             for level_index, level_name in enumerate(levels):
                 campaign_level_location = self.location(
                     name=f"{level_name} [{campaign_name}]",
-                    category=f"(Campaign: {campaign_name}) {level_name}",
+                    category=f"Campaign: {campaign_name}",
                     requires=requires.item(campaign_item, level_index + 1),
                 )
 
