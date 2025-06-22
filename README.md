@@ -59,13 +59,25 @@ Creates an .apworld file from a given manual. Running `uv -m scripts.mkworld dis
 
 By default, this saves the world file to the worlds folder in the default Archipelago install path for Windows (`C:\ProgramData\Archipelago\custom_worlds`). You can change this by setting the `OUTPUT_FOLDER` environment variable:
 
+#### `preview`
+
+Prints out the generated data for the given manual.
+
+```sh
+# print the data for the distance manual
+uv -m scripts.preview distance
+
+# print only the items
+uv -m scripts.preview distance items
+```
+
 ```sh
 # bash
-export OUTPUT_FOLDER=/home/maple/archipelago/custom_worlds
+export OUTPUT_FOLDER="$HOME/archipelago/custom_worlds"
 uv -m scripts.mkworld distance
 ```
 
-```powershell
+```ps1
 # powershell
 $env:OUTPUT_FOLDER="/home/maple/archipelago/custom_worlds"
 uv -m scripts.mkworld distance
