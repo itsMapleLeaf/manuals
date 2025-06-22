@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import json
 from logging import warning
 import os
@@ -53,10 +54,6 @@ def song_number_category_for(song_number: int) -> str:
     return f"Song Number {song_number}"
 
 
-def navigator_key_category_for(navigator: str) -> str:
-    return f"Navigator Access for {navigator}"
-
-
 class SoundVoltexWorld:
     locations: list[Location] = []
     items: list[Item] = []
@@ -76,36 +73,74 @@ class SoundVoltexWorld:
             )
         ]
 
+        @dataclass
+        class ChainItemSpec:
+            value: int
+            count: int
+
+        chain_item_specs = [
+            ChainItemSpec(value=100, count=1),
+            ChainItemSpec(value=50, count=2),
+            ChainItemSpec(value=20, count=5),
+            ChainItemSpec(value=10, count=10),
+            ChainItemSpec(value=5, count=16),
+            ChainItemSpec(value=1, count=20),
+        ]
+        chain_amount_total = sum(item.value * item.count for item in chain_item_specs)
+        chain_amount_required = int(chain_amount_total * 0.7)
+
         self.items += [
             Item(
-                name=f"CHAIN {"%03d" % amount}",
-                category=["CHAIN"],
+                name=f"CHAIN {"%03d" % item.value}",
+                category=[
+                    f"CHAIN ({chain_amount_required}/{chain_amount_total} required)"
+                ],
                 progression=True,
-                count=count,
-                value={"chain": amount},
+                count=item.count,
+                value={"chain": item.value},
             )
-            for amount, count in [
-                (100, 1),
-                (50, 2),
-                (20, 3),
-                (10, 5),
-                (5, 10),
-                (1, 20),
+            for item in chain_item_specs
+        ]
+
+        # adds an amount to a score to reach a goal
+        self.items += [
+            Item(
+                name=f"Score +{bonus}",
+                count=count,
+                useful=True,
+                category=["Helpers"],
+            )
+            for count, bonus in [
+                (25, "5.0000"),
+                (10, "10.0000"),
             ]
+        ]
+
+        # adds a percentage to a score to make it a pass
+        self.items += [
+            Item(
+                name=f"Score Gauge +5%",
+                count=10,
+                useful=True,
+                category=["Helpers"],
+            )
+        ]
+
+        # allows playing a lower difficulty
+        self.items += [
+            Item(
+                name="Downlevel",
+                count=10,
+                useful=True,
+                category=["Helpers"],
+            ),
         ]
 
         self.categories["Goals"] = {"hidden": True}
 
         for navigator in navigators:
-            self.categories[navigator_key_category_for(navigator)] = Category(
-                hidden=True
-            )
             self.items += [
-                Item(
-                    name=navigator,
-                    progression=True,
-                    category=["Navigator Keys", navigator_key_category_for(navigator)],
-                )
+                Item(name=navigator, progression=True, category=["Navigators"])
             ]
 
         for song_number, song in enumerate(ALL_SONGS):
@@ -120,8 +155,19 @@ class SoundVoltexWorld:
                 if song.title in navigator_songs
             ]
 
-            goals = ["Track Clear", "AA Rank", "AAA Rank"]
-            is_boss = any(level >= 20 for level in song.charts.values())
+            top_diff = max(song.charts.values())
+            is_boss = top_diff >= 20
+
+            def goals():
+                match top_diff:
+                    case 20:
+                        return ["Track Clear"]
+                    case 19:
+                        return ["Track Clear", "A Rank", "AA Rank"]
+                    case 18:
+                        return ["Track Clear", "AA Rank", "AAA Rank"]
+                    case _:
+                        return ["AAA Rank", "S Rank"]
 
             if is_boss:
                 self.items += [
@@ -144,7 +190,7 @@ class SoundVoltexWorld:
                 self.locations += [
                     Location(
                         name=song.identifier,
-                        requires=f"{{ItemValue(chain:300)}} and |@{song_number_category_for(song_number)}|",
+                        requires=f"{{ItemValue(chain:{chain_amount_required})}} and |@{song_number_category_for(song_number)}|",
                         category=[
                             "Goals",
                             song.identifier,
@@ -154,13 +200,12 @@ class SoundVoltexWorld:
                     )
                 ]
             elif song_navigators:
-                for goal in goals:
+                for goal in goals():
                     self.locations += [
                         Location(
                             name=f"{song.identifier} ({goal})",
                             requires=" or ".join(
-                                f"|@{navigator_key_category_for(navigator)}|"
-                                for navigator in song_navigators
+                                f"|{navigator}|" for navigator in song_navigators
                             ),
                             category=[
                                 "Goals",
@@ -184,7 +229,7 @@ class SoundVoltexWorld:
                         ],
                     )
                 ]
-                for goal in goals:
+                for goal in goals():
                     self.locations += [
                         Location(
                             name=f"{song.identifier} ({goal})",
@@ -197,128 +242,6 @@ class SoundVoltexWorld:
                             ],
                         )
                     ]
-
-        # set the current lazer color, which ever came latest
-        # they're all traps because any of them could give you awkward combinations,
-        # like reversed colors, same colors,
-        # or non-normal colors that are reversed from the previous non-normal colors
-        # that you got used to (lol)
-        # self.items += [
-        #     Item(
-        #         name=f"{side} Lazer: {color}",
-        #         count=2,
-        #         trap=True,
-        #         category=["(Traps) Lazer Color"],
-        #     )
-        #     for side in ["Left", "Right"]
-        #     for color in ["Red", "Yellow", "Green", "Blue"]
-        # ]
-
-        # alter speed (1.0x === CMod/MMod 100)
-        # set base speed at the start of the game
-        # current speed is the sum of all
-        # all are traps; slow or fast are both bad, but they can balance out!
-        # self.items += [
-        #     Item(name="Speed +0.2", count=8, trap=True, category=["(Traps) Speed"]),
-        #     Item(name="Speed -0.2", count=8, trap=True, category=["(Traps) Speed"]),
-        # ]
-
-        # set the random mod, whichever came latest
-        # self.items += [
-        #     Item(name="Random On", count=3, trap=True, category=["(Traps) Random"]),
-        #     Item(name="Random Off", count=3, useful=True, category=["(Traps) Random"]),
-        # ]
-
-        # progressive hidden/sudden, current is sum of all
-        # self.items += [
-        #     Item(name="Hidden +5%", count=8, trap=True, category=["(Traps) Hidden"]),
-        #     Item(name="Hidden -5%", count=8, useful=True, category=["(Traps) Hidden"]),
-        #     Item(name="Sudden +5%", count=8, trap=True, category=["(Traps) Sudden"]),
-        #     Item(name="Sudden -5%", count=8, useful=True, category=["(Traps) Sudden"]),
-        # ]
-
-        # adds an amount to a score to reach a goal
-        self.items += [
-            Item(
-                name=f"Score +{bonus}",
-                count=count,
-                useful=True,
-                category=["Score"],
-            )
-            for count, bonus in [
-                (50, "5.0000"),
-                (20, "10.0000"),
-                # (1, "100.0000"),
-                # (3, "50.0000"),
-                # (6, "20.0000"),
-                # (12, "10.0000"),
-                # (20, "5.0000"),
-            ]
-        ]
-
-        # adds a percentage to a score to make it a pass
-        self.items += [
-            Item(
-                name=f"Score Gauge +{bonus}%",
-                count=count,
-                useful=True,
-                category=["Score Gauge"],
-            )
-            for count, bonus in [
-                (20, "5"),
-                # (3, "25"),
-                # (5, "10"),
-                # (8, "5"),
-                # (15, "1"),
-            ]
-        ]
-
-        self.items += [
-            # Item(name="Cancel Trap", count=10, useful=True, category=["Helpers"]),
-            Item(name="Downlevel", count=10, useful=True, category=["Helpers"]),
-        ]
-
-        # start with hard timing window, and this "upgrades" to normal
-        normal_timing_window_item = Item(
-            name="Normal Timing Window", progression=True, category=["Helpers"]
-        )
-        self.items += [
-            normal_timing_window_item,
-        ]
-        self.locations += [
-            Location(
-                name=normal_timing_window_item["name"],
-                category=["(Helpers) Normal Timing Window"],
-                requires=f"|{normal_timing_window_item["name"]}|",
-            ),
-        ]
-
-        gauge_levels = [
-            # start at Blastive 2.5
-            "Blastive 2.0",
-            "Blastive 1.5",
-            "Blastive 1.0",
-            "Blastive 0.5",
-            "Effective",
-        ]
-
-        self.items += [
-            Item(
-                name="Progressive Gauge",
-                count=len(gauge_levels) + 3,
-                progression=True,
-                category=["Progressive Gauge"],
-            )
-        ]
-
-        for index, rate in enumerate(gauge_levels):
-            self.locations += [
-                Location(
-                    name=f"Progressive Gauge ({rate})",
-                    requires=f"|Progressive Gauge:{index + 1}|",
-                    category=["((Helpers)) Progressive Gauge"],
-                )
-            ]
 
 
 if __name__ == "__main__":
@@ -344,7 +267,8 @@ if __name__ == "__main__":
     script_dir = Path(__file__).parent
 
     apworld_folder = Path(
-        os.environ.get("APWORLD_OUTPUT_FOLDER") or script_dir.parent.parent / "dist"
+        os.environ.get("APWORLD_OUTPUT_FOLDER")
+        or "C:/ProgramData/Archipelago/custom_worlds"
     )
     apworld_folder.mkdir(exist_ok=True)
 

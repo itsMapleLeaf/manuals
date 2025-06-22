@@ -2,7 +2,7 @@
 	{
 		"name": "CHAIN 100",
 		"category": [
-			"CHAIN"
+			"CHAIN (350/500 required)"
 		],
 		"progression": true,
 		"count": 1,
@@ -13,7 +13,7 @@
 	{
 		"name": "CHAIN 050",
 		"category": [
-			"CHAIN"
+			"CHAIN (350/500 required)"
 		],
 		"progression": true,
 		"count": 2,
@@ -24,10 +24,10 @@
 	{
 		"name": "CHAIN 020",
 		"category": [
-			"CHAIN"
+			"CHAIN (350/500 required)"
 		],
 		"progression": true,
-		"count": 3,
+		"count": 5,
 		"value": {
 			"chain": 20
 		}
@@ -35,10 +35,10 @@
 	{
 		"name": "CHAIN 010",
 		"category": [
-			"CHAIN"
+			"CHAIN (350/500 required)"
 		],
 		"progression": true,
-		"count": 5,
+		"count": 10,
 		"value": {
 			"chain": 10
 		}
@@ -46,10 +46,10 @@
 	{
 		"name": "CHAIN 005",
 		"category": [
-			"CHAIN"
+			"CHAIN (350/500 required)"
 		],
 		"progression": true,
-		"count": 10,
+		"count": 16,
 		"value": {
 			"chain": 5
 		}
@@ -57,7 +57,7 @@
 	{
 		"name": "CHAIN 001",
 		"category": [
-			"CHAIN"
+			"CHAIN (350/500 required)"
 		],
 		"progression": true,
 		"count": 20,
@@ -66,99 +66,119 @@
 		}
 	},
 	{
+		"name": "Score +5.0000",
+		"count": 25,
+		"useful": true,
+		"category": [
+			"Helpers"
+		]
+	},
+	{
+		"name": "Score +10.0000",
+		"count": 10,
+		"useful": true,
+		"category": [
+			"Helpers"
+		]
+	},
+	{
+		"name": "Score Gauge +5%",
+		"count": 10,
+		"useful": true,
+		"category": [
+			"Helpers"
+		]
+	},
+	{
+		"name": "Downlevel",
+		"count": 10,
+		"useful": true,
+		"category": [
+			"Helpers"
+		]
+	},
+	{
 		"name": "RASIS",
 		"progression": true,
 		"category": [
-			"Navigator Keys",
-			"Navigator Access for RASIS"
+			"Navigators"
 		]
 	},
 	{
 		"name": "GRACE",
 		"progression": true,
 		"category": [
-			"Navigator Keys",
-			"Navigator Access for GRACE"
+			"Navigators"
 		]
 	},
 	{
 		"name": "Tsumabuki Left",
 		"progression": true,
 		"category": [
-			"Navigator Keys",
-			"Navigator Access for Tsumabuki Left"
+			"Navigators"
 		]
 	},
 	{
 		"name": "Tsumabuki Right",
 		"progression": true,
 		"category": [
-			"Navigator Keys",
-			"Navigator Access for Tsumabuki Right"
+			"Navigators"
 		]
 	},
 	{
 		"name": "NEAR & NOAH",
 		"progression": true,
 		"category": [
-			"Navigator Keys",
-			"Navigator Access for NEAR & NOAH"
+			"Navigators"
 		]
 	},
 	{
 		"name": "Kureha",
 		"progression": true,
 		"category": [
-			"Navigator Keys",
-			"Navigator Access for Kureha"
+			"Navigators"
 		]
 	},
 	{
 		"name": "Hina, Ao, Momo",
 		"progression": true,
 		"category": [
-			"Navigator Keys",
-			"Navigator Access for Hina, Ao, Momo"
+			"Navigators"
 		]
 	},
 	{
 		"name": "Voltenizer Maxima",
 		"progression": true,
 		"category": [
-			"Navigator Keys",
-			"Navigator Access for Voltenizer Maxima"
+			"Navigators"
 		]
 	},
 	{
 		"name": "Kougei Ciel Nana",
 		"progression": true,
 		"category": [
-			"Navigator Keys",
-			"Navigator Access for Kougei Ciel Nana"
+			"Navigators"
 		]
 	},
 	{
 		"name": "Kanade Yamashina",
 		"progression": true,
 		"category": [
-			"Navigator Keys",
-			"Navigator Access for Kanade Yamashina"
+			"Navigators"
 		]
 	},
 	{
 		"name": "Lyric Rishuna",
 		"progression": true,
 		"category": [
-			"Navigator Keys",
-			"Navigator Access for Lyric Rishuna"
+			"Navigators"
 		]
 	},
 	{
 		"name": "TAMA-chan & TAMANEKO",
 		"progression": true,
 		"category": [
-			"Navigator Keys",
-			"Navigator Access for TAMA-chan & TAMANEKO"
+			"Navigators"
 		]
 	},
 	{
@@ -17647,53 +17667,6 @@
 			"Songs",
 			"～仔羊のナヴァラン・クリシェを添えて～ by PiyoPiyo Kitchen",
 			"Song Number 2118"
-		]
-	},
-	{
-		"name": "Score +5.0000",
-		"count": 50,
-		"useful": true,
-		"category": [
-			"Score"
-		]
-	},
-	{
-		"name": "Score +10.0000",
-		"count": 20,
-		"useful": true,
-		"category": [
-			"Score"
-		]
-	},
-	{
-		"name": "Score Gauge +5%",
-		"count": 20,
-		"useful": true,
-		"category": [
-			"Score Gauge"
-		]
-	},
-	{
-		"name": "Downlevel",
-		"count": 10,
-		"useful": true,
-		"category": [
-			"Helpers"
-		]
-	},
-	{
-		"name": "Normal Timing Window",
-		"progression": true,
-		"category": [
-			"Helpers"
-		]
-	},
-	{
-		"name": "Progressive Gauge",
-		"count": 8,
-		"progression": true,
-		"category": [
-			"Progressive Gauge"
 		]
 	}
 ]
