@@ -6,7 +6,7 @@ from dataclasses_json import DataClassJsonMixin
 from tap import Tap
 
 from ..lib.manuals import MANUALS
-from ..lib.paths import LIB_FOLDER, PROJECT_ROOT
+from ..lib.paths import MANUAL_LIB_FOLDER, PROJECT_ROOT
 
 
 @dataclass
@@ -47,9 +47,9 @@ if apworld_temp_contents_folder.exists():
 
 copytree_print(manual.src, apworld_temp_contents_folder)
 
-for entry in os.listdir(LIB_FOLDER):
+for entry in os.listdir(MANUAL_LIB_FOLDER):
     copytree_print(
-        LIB_FOLDER / entry,
+        MANUAL_LIB_FOLDER / entry,
         apworld_temp_contents_folder / entry,
         dirs_exist_ok=True,
     )
