@@ -6,7 +6,7 @@ from dataclasses_json import DataClassJsonMixin
 from tap import Tap
 
 from ..lib.manuals import MANUALS
-from ..lib.paths import MANUAL_LIB_FOLDER, PROJECT_ROOT
+from ..lib.paths import MANUAL_KIT_FOLDER, MANUAL_KIT_NAME, PROJECT_ROOT
 
 
 @dataclass
@@ -47,12 +47,11 @@ if apworld_temp_contents_folder.exists():
 
 copytree_print(manual.src, apworld_temp_contents_folder)
 
-for entry in os.listdir(MANUAL_LIB_FOLDER):
-    copytree_print(
-        MANUAL_LIB_FOLDER / entry,
-        apworld_temp_contents_folder / entry,
-        dirs_exist_ok=True,
-    )
+copytree_print(
+    MANUAL_KIT_FOLDER,
+    apworld_temp_contents_folder / MANUAL_KIT_NAME,
+    dirs_exist_ok=True,
+)
 
 output_zip = shutil.make_archive(world_name, "zip", root_dir=manual.dist, base_dir=".")
 apworld_final_destination_fox_only_no_items = (

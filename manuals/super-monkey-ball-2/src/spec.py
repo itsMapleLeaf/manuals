@@ -1,7 +1,7 @@
 import json
 from dataclasses import dataclass
 
-from .world_spec import WorldSpec, requires
+from .manual_kit import WorldSpec, requires
 
 @dataclass
 class LevelWorld:

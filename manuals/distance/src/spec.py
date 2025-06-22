@@ -1,6 +1,6 @@
 import json
 
-from .world_spec import WorldSpec, requires
+from .manual_kit import WorldSpec, requires
 
 
 class DistanceWorldSpec(WorldSpec):

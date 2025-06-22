@@ -1,2 +1,2 @@
 # stub for type-checking, this will get replaced in the .apworld with the actual code
-from manual_lib.world_spec import *
+from manual_kit import *

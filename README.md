@@ -94,26 +94,20 @@ $env:OUTPUT_FOLDER="/home/maple/archipelago/custom_worlds"
 uv -m scripts.mkworld distance
 ```
 
-### Manual Structure
+### Manual Kit
 
-> TODO
+The [manual kit](./manual_kit/) contains shared code used by each manual to generate its world data.
 
-### Sharing Code
+Archipelago requires using relative imports within worlds, so any code used by the manual source needs to be moved to the `src` folder; that's what the [`mkworld`](#mkworld) script does before generating an .apworld.
 
-The [`mkworld`](#mkworld) script copies files inside the `manual_lib` folder into the world's source folder before generating its .apworld. If you have a file at `manual_lib/util.py`, that will get copied to the root folder in the .apworld, e.g. at `manual_Distance_MapleLeaf/util.py`.
-
-Archipelago requires using relative imports within worlds. For type checking, you can add a `.py` file that re-exports from the lib folder, which will get overwritten on build:
+For running the code outside of world generation, a stub file is used, which re-exports from the manual_kit folder:
 
 ```py
-# manuals/distance/src/world_spec/__init__.py
-from .....manual_lib.world_spec import *
+# manuals/distance/src/manual_kit/__init__.py
+from manual_kit import *
 ```
 
-```py
-# alternatively, if you have the top-level lib folder configured in python paths
-# (ℹ️ this repo configures this in .vscode/settings.json)
-from manual_lib.world_spec import *
-```
+This stub is replaced with the real code during world generation, and the `PYTHONPATH` is configured such that this is accessible through an absolute import before generation.
 
 > This is slightly gross, but it's the best way I could think of to accomplish code sharing ¯\\\_(ツ)\_/¯
 

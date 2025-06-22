@@ -3,7 +3,7 @@ import dataclasses
 import os
 from pathlib import Path
 from types import ModuleType
-from manual_lib.world_spec import CategoryData, LocationData, ItemData
+from manual_kit import CategoryData, LocationData, ItemData
 
 from .paths import PROJECT_ROOT
 
