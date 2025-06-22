@@ -119,17 +119,8 @@ class SuperMonkeyBall2WorldSpec(WorldSpec):
                     banana_item,
                     self.victory_level_required_banana_count * (level_index + 1),
                 ),
+                victory=level_index == len(self.victory_world.levels) - 1,
             )
-
-        self.location(
-            name="Defeat Dr. Bad-Boon",
-            victory=True,
-            category="Victory!",
-            requires=requires.item(
-                banana_item,
-                self.victory_level_required_banana_count * len(self.victory_world.levels),
-            ),
-        )
 
 
 if __name__ == "__main__":
