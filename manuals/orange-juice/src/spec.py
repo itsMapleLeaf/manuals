@@ -1,25 +1,28 @@
 from typing import Optional
 from dataclasses import dataclass
 
-from .manual_kit import WorldSpec, requires
+from .manual_kit import WorldSpec, requires, RangeOptionSpec
 from .util import plural
 
 
+@dataclass
+class CharacterSpec:
+    name: str
+    goal: Optional[str] = None
+
+
+@dataclass
+class BoardSpec:
+    name: str
+
+
+@dataclass
+class OrangeItemSpec:
+    value: int
+    count: int
+
+
 class OrangeJuiceWorldSpec(WorldSpec):
-    @dataclass
-    class CharacterSpec:
-        name: str
-        goal: Optional[str] = None
-
-    @dataclass
-    class BoardSpec:
-        name: str
-
-    @dataclass
-    class OrangeItemSpec:
-        value: int
-        count: int
-
     characters: dict[str, CharacterSpec] = {
         item.name: item
         for item in [
@@ -177,6 +180,9 @@ class OrangeJuiceWorldSpec(WorldSpec):
     total_oranges = sum(item.count * item.value for item in orange_item_specs)
     required_oranges_for_victory = int(total_oranges * (3 / 4))
 
+    character_count_option: RangeOptionSpec
+    board_count_option: RangeOptionSpec
+
     def __init__(self) -> None:
         self.define_characters()
         self.define_boards()
@@ -185,7 +191,7 @@ class OrangeJuiceWorldSpec(WorldSpec):
         self.define_achievements()
 
     def define_characters(self):
-        self.range_option(
+        self.character_count_option = self.range_option(
             "character_count",
             display_name="Character Count",
             description="The number of randomly selected characters added to the pool",
@@ -218,7 +224,7 @@ class OrangeJuiceWorldSpec(WorldSpec):
                 )
 
     def define_boards(self):
-        self.range_option(
+        self.board_count_option = self.range_option(
             "board_count",
             display_name="Board Count",
             description="The number of randomly selected boards added to the pool",
@@ -236,7 +242,7 @@ class OrangeJuiceWorldSpec(WorldSpec):
             self.location(
                 f"Play a game on {board.name}",
                 category=f"Boards - {board.name}",
-                requires=requires.item(board_item),
+                requires=requires.opt_all(requires.item(board_item)),
             )
 
     def define_oranges(self):
