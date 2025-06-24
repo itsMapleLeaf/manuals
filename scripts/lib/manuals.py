@@ -1,8 +1,7 @@
 from dataclasses import dataclass
-import dataclasses
 import os
 from pathlib import Path
-from types import ModuleType
+from typing import TypedDict
 from manual_kit import CategoryData, LocationData, ItemData
 
 from .paths import ARCHIPELAGO_FOLDER, PROJECT_ROOT
@@ -78,8 +77,7 @@ class ManualDefinition:
         return ManualData(**json.loads(data_json))
 
 
-@dataclass
-class ManualData:
+class ManualData(TypedDict):
     game_table: dict[str, object]
     item_table: list[ItemData]
     location_table: list[LocationData]
@@ -87,14 +85,6 @@ class ManualData:
     category_table: dict[str, CategoryData]
     option_table: dict[str, object]
     meta_table: dict[str, object]
-
-    @classmethod
-    def from_module(cls, module: ModuleType) -> "ManualData":
-        class_fields = {f.name for f in dataclasses.fields(cls)}
-        known_module_items = {
-            k: v for k, v in module.__dict__.items() if k in class_fields
-        }
-        return ManualData(**known_module_items)
 
 
 MANUALS_FOLDER = PROJECT_ROOT / "manuals"
