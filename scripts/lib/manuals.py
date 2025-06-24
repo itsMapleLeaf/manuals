@@ -33,29 +33,15 @@ class ManualDefinition:
         import subprocess
         import textwrap
 
+        with open(Path(__file__).parent / "data_loader.py") as data_loader_file:
+            data_loader_script = data_loader_file.read()
+
         with tempfile.NamedTemporaryFile(
             mode="w",
             suffix=".py",
             dir=self.src,
             delete_on_close=False,
         ) as temp_file:
-            data_loader_script = textwrap.dedent(
-                """
-                from . import Data
-                import json
-
-                print(json.dumps({
-                    "game_table": Data.game_table,
-                    "item_table": Data.item_table,
-                    "location_table": Data.location_table,
-                    "region_table": Data.region_table,
-                    "category_table": Data.category_table,
-                    "option_table": Data.option_table,
-                    "meta_table": Data.meta_table,
-                }))
-                """
-            ).strip()
-
             temp_file.write(data_loader_script)
             temp_file.close()
             (temp_module, _) = os.path.splitext(os.path.basename(temp_file.name))
