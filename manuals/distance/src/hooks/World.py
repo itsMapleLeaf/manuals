@@ -1,22 +1,18 @@
 # Object classes from AP core, to represent an entire MultiWorld and this individual World that's part of it
-from ..spec import DistanceWorldSpec
+from ..spec import campaigns, filler_item_names, get_campaign_key_name
 from worlds.AutoWorld import World
 from BaseClasses import MultiWorld, CollectionState, Item
 
 # Object classes from Manual -- extending AP core -- representing items and locations that are used in generation
 from ..Items import ManualItem
-from ..Locations import ManualLocation
 
 # Raw JSON data from the Manual apworld, respectively:
 #          data/game.json, data/items.json, data/locations.json, data/regions.json
 #
-from ..Data import game_table, item_table, location_table, region_table
 
 # These helper methods allow you to determine if an option has been set, or what its value is, for any player in the multiworld
-from ..Helpers import is_option_enabled, get_option_value, format_state_prog_items_key, ProgItemsCat
 
 # calling logging.info("message") anywhere below in this file will output the message to both console and log file
-import logging
 
 ########################################################################################
 ## Order of method calls when the world generates:
@@ -31,8 +27,7 @@ import logging
 ########################################################################################
 
 campaign_item_names = [
-    DistanceWorldSpec.get_campaign_item_name(campaign_name)
-    for campaign_name in DistanceWorldSpec.campaigns.keys()
+    get_campaign_key_name(campaign_name) for campaign_name in campaigns.keys()
 ]
 
 # Use this function to change the valid filler items to be created to replace item links or starting items.
@@ -44,7 +39,7 @@ def hook_get_filler_item_name(world: World, multiworld: MultiWorld, player: int)
         return world.random.choice(campaign_item_names)
 
     # randomize filler names
-    return world.random.choice(DistanceWorldSpec.filler_item_names)
+    return world.random.choice(filler_item_names)
 
 # Called before regions and locations are created. Not clear why you'd want this, but it's here. Victory location is included, but Victory event is not placed yet.
 def before_create_regions(world: World, multiworld: MultiWorld, player: int):

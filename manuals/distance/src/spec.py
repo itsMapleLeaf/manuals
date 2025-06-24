@@ -3,111 +3,198 @@ import json
 from .manual_kit import WorldSpec, requires
 
 
+arcade_level_sets = {
+    "Ignition": [
+        "Chroma",
+        "Vector Valley",
+        "Static Fire Signal",
+        "Shallow",
+        "Incline",
+        "Station",
+        "Whisper",
+        "Particular Journey",
+        "Turbines",
+        "COAT Speedway",
+        "Tharsis Tholus",
+    ],
+    "High Impact": [
+        "Virtual Rift",
+        "Sea",
+        "Beta Echoes",
+        "Sender",
+        "Absorption",
+        "Fiber",
+        "Homestead",
+        "Salmon",
+        "The Manor",
+        "Uncanny Valley",
+        "Sakura Skyway",
+        "Le Teleputo",
+        "Method",
+        "Binary Construct",
+        "Storm 2 - Neon Thunder",
+        "Amusement",
+        "Outrun",
+        "Iris",
+    ],
+    "Brute Force": [
+        "Volcanic Rush",
+        "Ruin",
+        "Moonlight",
+        "Instability",
+        "Shafty",
+        "Precept",
+        "Aeris",
+        "Overdrive",
+        "Floral",
+        "Past",
+        "Neo Seoul",
+        "Event Horizon",
+        "Yellow",
+        "Sugar Rush",
+        "Sword",
+        "Forsaken Shrine",
+        "Toy Time",
+        "Noir",
+        "Brink",
+        "Projection",
+        "Vibe",
+        "Luminescence",
+    ],
+    "Overdrive": [
+        "Paradise Lost",
+        "Epicentre",
+        "Neo Seoul II",
+        "Serenity",
+        "Red",
+        "Table",
+        "Knowledge",
+        "Pacebreaker",
+        "White",
+        "Tetreal",
+        "Mentality",
+        "Wired",
+        "Hardline",
+        "Gravity",
+        "Digital",
+        "Monument",
+        "Fulcrum",
+        "SR Motorplex",
+        "Hard Light Transfer",
+        "Impulse",
+        "Observatory",
+        "Earth",
+        "Eclipse",
+        "Shrine",
+        "Liminal",
+        "White Lightning Returns",
+        "Affect",
+        "The Night Before",
+        "Industrial Fury",
+        "Fallback Protocol",
+        "Cosmic Glitch",
+        "Orthodox",
+        "Zenith",
+        "Micro",
+        "Candles of Hekate",
+        "Sector 0",
+        "Macro",
+        "Glide in the Hole",
+        "Inferno",
+    ],
+}
+
+campaigns = {
+    "Adventure": [
+        "Instantiation",
+        "Cataclysm",
+        "Diversion",
+        "Euphoria",
+        "Entanglement",
+        "Automation",
+        "Abyss",
+        "Embers",
+        "Isolation",
+        "Repulsion",
+        "Compression",
+        "Research",
+        "Contagion",
+        "Overload",
+        "Ascension",
+        "Enemy",
+    ],
+    "Lost to Echoes": [
+        "Long Ago",
+        "Forgotten Utopia",
+        "A Deeper Void",
+        "Eye of the Storm",
+        "The Sentinel Still Watches",
+        "Shadow of the Beast",
+        "Pulse of a Violent Heart",
+        "It Was Supposed To Be Perfect",
+        "Echoes",
+    ],
+    "Nexus": [
+        "Mobilization",
+        "Resonance",
+        "Deterrence",
+        "Terminus",
+        "Collapse",
+    ],
+    # this is run via Arcade and doesn't actually have a campaign,
+    # but I'm treating it as a campaign because it's more fun to run in order
+    "Legacy": [
+        "Broken Symmetry",
+        "Lost Society",
+        "Negative Space",
+        "Departure",
+        "Ground Zero",
+        "The Observer Effect",
+        "Aftermath",
+        "Friction",
+        "The Thing About Machines",
+        "Corruption",
+        "Dissolution",
+        "Falling Through",
+        "Monolith",
+        "Destination Unknown",
+        "Rooftops",
+        "Factory",
+        "Stronghold",
+        "Approach",
+        "Continuum",
+        "Escape",
+    ],
+}
+
+keys_per_campaign = sum(
+    len(level_list) for level_list in arcade_level_sets.values()
+) // len(campaigns)
+
+filler_item_names = [
+    "corruption error",
+    "out of memory",
+    "access violation",
+    "invalid sequence termination",
+    "segmentation fault",
+    "kernel failure",
+    "version mismatch",
+    "unknown protocol",
+    "syntax error",
+    "calibration failure",
+    "permission denied",
+    "resource limit exceeded",
+    "fatal exception",
+]
+
+
+def get_campaign_key_name(campaign_name: str):
+    return f"Key - {campaign_name}"
+
+
 class DistanceWorldSpec(WorldSpec):
-    campaigns = {
-        "Adventure": [
-            "Instantiation",
-            "Cataclysm",
-            "Diversion",
-            "Euphoria",
-            "Entanglement",
-            "Automation",
-            "Abyss",
-            "Embers",
-            "Isolation",
-            "Repulsion",
-            "Compression",
-            "Research",
-            "Contagion",
-            "Overload",
-            "Ascension",
-            "Enemy",
-        ],
-        "Lost to Echoes": [
-            "Long Ago",
-            "Forgotten Utopia",
-            "A Deeper Void",
-            "Eye of the Storm",
-            "The Sentinel Still Watches",
-            "Shadow of the Beast",
-            "Pulse of a Violent Heart",
-            "It Was Supposed To Be Perfect",
-            "Echoes",
-        ],
-    }
-
-    arcade_level_sets = {
-        "Adventure": [
-            "Cataclysm",
-            "Diversion",
-            "Euphoria",
-            "Entanglement",
-            "Automation",
-            "Abyss",
-            "Embers",
-            "Isolation",
-            "Repulsion",
-            "Compression",
-            "Research",
-            "Contagion",
-            "Overload",
-            "Ascension",
-        ],
-        "Lost to Echoes": [
-            "Forgotten Utopia",
-            "A Deeper Void",
-            "Eye of the Storm",
-            "The Sentinel Still Watches",
-            "Shadow of the Beast",
-            "Pulse of a Violent Heart",
-            "It Was Supposed To Be Perfect",
-        ],
-        "Legacy": [
-            "Broken Symmetry",
-            "Lost Society",
-            "Negative Space",
-            "Departure",
-            "Ground Zero",
-            "The Observer Effect",
-            "Aftermath",
-            "Friction",
-            "The Thing About Machines",
-            "Corruption",
-            "Dissolution",
-            "Falling Through",
-            "Monolith",
-            "Destination Unknown",
-            "Rooftops",
-            "Factory",
-            "Stronghold",
-            "Approach",
-            "Continuum",
-            "Escape",
-        ],
-    }
-
-    filler_item_names = [
-        "corruption error",
-        "out of memory",
-        "access violation",
-        "invalid sequence termination",
-        "segmentation fault",
-        "kernel failure",
-        "version mismatch",
-        "unknown protocol",
-        "syntax error",
-        "calibration failure",
-        "permission denied",
-        "resource limit exceeded",
-        "fatal exception",
-    ]
-
-    @staticmethod
-    def get_campaign_item_name(campaign_name: str):
-        return f"{campaign_name} [Progressive Campaign]"
-
     def __init__(self) -> None:
-        for set_name, levels in self.arcade_level_sets.items():
+        for set_name, levels in arcade_level_sets.items():
             for level_name in levels:
                 level_item = self.item(
                     name=f"{level_name} [{set_name}]",
@@ -115,50 +202,56 @@ class DistanceWorldSpec(WorldSpec):
                     progression=True,
                 )
 
-                for medal in ["Gold", "Diamond"]:
+                # just gives every level multiple checks for fun
+                for sector_index in range(3):
                     self.location(
-                        name=f"{level_name} - {medal} Medal [{set_name}]",
-                        category=f"Arcade: {set_name}",
+                        name=f"{level_name} [{set_name}] - Sector {sector_index}",
+                        category=f"Arcade - {level_name} [{set_name}]",
                         requires=requires.item(level_item),
                     )
 
         campaign_completion_item = self.item(
             name=f"Campaign Completion",
             category="Campaign Completion",
-            count=len(self.campaigns),
+            count=len(campaigns),
             progression=True,
         )
 
-        for campaign_name, levels in self.campaigns.items():
-            campaign_item = self.item(
-                name=self.get_campaign_item_name(campaign_name),
-                category="Campaign",
-                count=len(levels),
+        for campaign_name, levels in campaigns.items():
+            campaign_key_item = self.item(
+                name=get_campaign_key_name(campaign_name),
+                category="Campaign Keys",
+                count=keys_per_campaign,
                 progression=True,
             )
 
-            for level_index, level_name in enumerate(levels):
-                campaign_level_location = self.location(
+            *progressive_levels, completion_level = levels
+
+            for level_name in progressive_levels:
+                self.location(
                     name=f"{level_name} [{campaign_name}]",
-                    category=f"Campaign: {campaign_name}",
-                    requires=requires.item(campaign_item, level_index + 1),
+                    category=f"Campaign - {campaign_name}",
+                    requires=requires.item(campaign_key_item, "50%"),
                 )
 
-                if level_index == len(levels) - 1:
-                    campaign_level_location["place_item"] = [
-                        campaign_completion_item["name"]
-                    ]
+            self.location(
+                name=f"{completion_level} [{campaign_name}]",
+                category=f"Campaign - {campaign_name}",
+                requires=requires.item(campaign_key_item, "50%"),
+                place_item=[campaign_completion_item["name"]],
+            )
 
         self.location(
-            name="All Campaigns Completed",
-            requires=requires.item(campaign_completion_item, "all"),
+            name="Campaign Completion Goal",
+            category="(Victory)",
+            requires=requires.item(campaign_completion_item, "1"),
             victory=True,
         )
 
-        for filler_item_name in self.filler_item_names:
+        for filler_item_name in filler_item_names:
             self.item(
                 filler_item_name,
-                category="fatal exception (Filler)",
+                category="Filler",
                 filler=True,
                 trap=True,
             )

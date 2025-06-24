@@ -8,13 +8,6 @@ spec = DistanceWorldSpec()
 
 # called after the game.json file has been loaded
 def after_load_game_file(game_table: dict) -> dict:
-    game_table["starting_items"] += [
-        {
-            "items": [DistanceWorldSpec.get_campaign_item_name(campaign_name)],
-            "random": 1,
-        }
-        for campaign_name in DistanceWorldSpec.campaigns
-    ]
     return game_table
 
 

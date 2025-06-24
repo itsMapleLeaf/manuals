@@ -1,6 +1,6 @@
 {
     "$schema": "https://github.com/ManualForArchipelago/Manual/raw/main/schemas/Manual.game.schema.json",
-    "game": "Distance",
+    "game": "Distance_dev",
     "creator": "MapleLeaf",
     "filler_item_name": "If you see this, there's a bug!",
     "starting_items": [
