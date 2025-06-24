@@ -20,12 +20,7 @@ Some of the manuals use their own old ad-hoc generation code written before I pu
 
 ### [100% Orange Juice](./manuals/orange-juice/)
 
-⚠️ Has its own build script which should be used instead of the new one. It should be run as a module, **_without_** uv:
-
-```sh
-cd manuals/orange-juice
-python -m scripts.build
-```
+✅ Fully refactored
 
 ### [Sound Voltex](./manuals/sound-voltex/)
 
