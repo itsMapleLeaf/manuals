@@ -90,8 +90,8 @@ Prints out the generated data for the given manual.
 # print the data for the distance manual
 uv -m scripts.preview distance
 
-# print only the items
-uv -m scripts.preview distance items
+# write the output to a file (.local is ignored in this repo)
+uv -m scripts.preview distance > .local/preview.json
 ```
 
 ### Manual Kit

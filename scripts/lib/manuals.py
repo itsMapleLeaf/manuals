@@ -5,7 +5,7 @@ from pathlib import Path
 from types import ModuleType
 from manual_kit import CategoryData, LocationData, ItemData
 
-from .paths import PROJECT_ROOT
+from .paths import ARCHIPELAGO_FOLDER, PROJECT_ROOT
 
 
 @dataclass
@@ -29,39 +29,53 @@ class ManualDefinition:
         return self.root / "dist"
 
     def load_data(self):
-        import importlib.util
-        import sys
+        import tempfile
+        import json
+        import subprocess
+        import textwrap
 
-        data_module_path = self.src / "Data.py"
-        spec = importlib.util.spec_from_file_location(
-            f"{self.name}.src.Data", data_module_path
-        )
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            suffix=".py",
+            dir=self.src,
+            delete_on_close=False,
+        ) as temp_file:
+            data_loader_script = textwrap.dedent(
+                """
+                from . import Data
+                import json
 
-        if spec is None or spec.loader is None:
-            raise ImportError(f"Could not load module from {data_module_path}")
+                print(json.dumps({
+                    "game_table": Data.game_table,
+                    "item_table": Data.item_table,
+                    "location_table": Data.location_table,
+                    "region_table": Data.region_table,
+                    "category_table": Data.category_table,
+                    "option_table": Data.option_table,
+                    "meta_table": Data.meta_table,
+                }))
+                """
+            ).strip()
 
-        data_module = importlib.util.module_from_spec(spec)
+            temp_file.write(data_loader_script)
+            temp_file.close()
+            (temp_module, _) = os.path.splitext(os.path.basename(temp_file.name))
 
-        old_path = sys.path[:]
-        old_modules = sys.modules.copy()
+            python_paths = [
+                PROJECT_ROOT,
+                ARCHIPELAGO_FOLDER,
+            ]
 
-        try:
-            sys.path.insert(0, str(self.root.parent))
-            sys.path.append(str(PROJECT_ROOT / "Archipelago"))
+            data_json = subprocess.check_output(
+                ["uv", "run", "-m", f"src.{temp_module}"],
+                cwd=self.root,
+                env={
+                    **os.environ.copy(),
+                    "PYTHONPATH": ";".join(map(str, python_paths)),
+                },
+            )
 
-            src_module = ModuleType(f"{self.name}.src")
-            src_module.__path__ = [str(self.src)]
-            sys.modules[f"{self.name}.src"] = src_module
-
-            spec.loader.exec_module(data_module)
-        finally:
-            sys.path[:] = old_path
-            for module_name in list(sys.modules.keys()):
-                if module_name.startswith(f"{self.name}.") or module_name == self.name:
-                    if module_name not in old_modules:
-                        del sys.modules[module_name]
-
-        return ManualData.from_module(data_module)
+        return ManualData(**json.loads(data_json))
 
 
 @dataclass
