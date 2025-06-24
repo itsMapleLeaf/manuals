@@ -1,5 +1,17 @@
 from typing import Optional, Unpack
 
+from .options import (
+    ChoiceOptionArgs,
+    ChoiceOptionData,
+    ChoiceOptionSpec,
+    OptionData,
+    RangeOptionArgs,
+    RangeOptionData,
+    RangeOptionSpec,
+    ToggleOptionArgs,
+    ToggleOptionData,
+    ToggleOptionSpec,
+)
 from .location import LocationArgs, LocationData, Requirement, Requires
 from .item import ItemArgs, ItemData
 from .category import CategoryArgs, CategoryData
@@ -11,6 +23,7 @@ class WorldSpec:
     items: list[ItemData] = []
     locations: list[LocationData] = []
     categories: dict[str, CategoryData] = {}
+    options: dict[str, OptionData] = {}
 
     @property
     def item_count(self) -> int:
@@ -39,3 +52,22 @@ class WorldSpec:
         category = CategoryData(name=name, **kwargs)
         self.categories[name] = category
         return category
+
+    def toggle_option(
+        self, name: str, **kwargs: Unpack[ToggleOptionArgs]
+    ) -> ToggleOptionSpec:
+        option = ToggleOptionData(**kwargs, type="Toggle")
+        self.options[name] = option
+        return ToggleOptionSpec(name, kwargs)
+
+    def range_option(
+        self, name: str, **kwargs: Unpack[RangeOptionArgs]
+    ) -> RangeOptionSpec:
+        self.options[name] = RangeOptionData(**kwargs, type="Range")
+        return RangeOptionSpec(name, kwargs)
+
+    def choice_option(
+        self, name: str, **kwargs: Unpack[ChoiceOptionArgs]
+    ) -> ChoiceOptionSpec:
+        self.options[name] = ChoiceOptionData(**kwargs, type="Choice")
+        return ChoiceOptionSpec(name, kwargs)
