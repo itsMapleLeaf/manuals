@@ -111,8 +111,8 @@ class SoundVoltexWorld:
                 category=["Helpers"],
             )
             for count, bonus in [
-                (25, "5.0000"),
-                (10, "10.0000"),
+                (40, "5.0000"),
+                (15, "10.0000"),
             ]
         ]
 
