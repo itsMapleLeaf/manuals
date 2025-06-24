@@ -1,4 +1,5 @@
 {
+    "$schema": "../../schemas/Manual.options.schema.json",
     "core": {},
     "user": {}
 }

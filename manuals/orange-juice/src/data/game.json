@@ -8,6 +8,10 @@
     "starting_items": [
         {
             "item_categories": ["Characters"],
+            "random": 3
+        },
+        {
+            "item_categories": ["Boards"],
             "random": 1
         }
     ],
