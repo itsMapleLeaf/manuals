@@ -23,7 +23,7 @@ class WorldSpec:
     items: list[ItemData] = []
     locations: list[LocationData] = []
     categories: dict[str, CategoryData] = {}
-    options: dict[str, OptionData] = {}
+    user_options: dict[str, OptionData] = {}
 
     @property
     def item_count(self) -> int:
@@ -56,18 +56,17 @@ class WorldSpec:
     def toggle_option(
         self, name: str, **kwargs: Unpack[ToggleOptionArgs]
     ) -> ToggleOptionSpec:
-        option = ToggleOptionData(**kwargs, type="Toggle")
-        self.options[name] = option
+        self.user_options[name] = ToggleOptionData(**kwargs, type="Toggle")
         return ToggleOptionSpec(name, kwargs)
 
     def range_option(
         self, name: str, **kwargs: Unpack[RangeOptionArgs]
     ) -> RangeOptionSpec:
-        self.options[name] = RangeOptionData(**kwargs, type="Range")
+        self.user_options[name] = RangeOptionData(**kwargs, type="Range")
         return RangeOptionSpec(name, kwargs)
 
     def choice_option(
         self, name: str, **kwargs: Unpack[ChoiceOptionArgs]
     ) -> ChoiceOptionSpec:
-        self.options[name] = ChoiceOptionData(**kwargs, type="Choice")
+        self.user_options[name] = ChoiceOptionData(**kwargs, type="Choice")
         return ChoiceOptionSpec(name, kwargs)
