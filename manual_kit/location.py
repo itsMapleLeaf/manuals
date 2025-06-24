@@ -35,7 +35,7 @@ class FunctionRequirement(Requirement):
     input: str
 
     def __str__(self) -> str:
-        return "%s(%s)" % (self.name, self.input)
+        return "{%s(%s)}" % (self.name, self.input)
 
 
 @dataclass
