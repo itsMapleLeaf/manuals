@@ -202,8 +202,9 @@ class DistanceWorldSpec(WorldSpec):
                     progression=True,
                 )
 
-                # just gives every level multiple checks for fun
-                for sector_index in range(3):
+                # just gives every level multiple checks for fun,
+                # and to fit all the items
+                for sector_index in range(2):
                     self.location(
                         name=f"{level_name} [{set_name}] - Sector {sector_index}",
                         category=f"Arcade - {level_name} [{set_name}]",
