@@ -1,6 +1,6 @@
 from typing import Any
 
-from ..spec import DistanceWorldSpec
+from .spec import DistanceWorldSpec, arcade_location_category_name
 
 
 spec = DistanceWorldSpec()
@@ -39,6 +39,7 @@ def after_load_region_file(region_table: dict) -> dict:
 
 # called after the categories.json file has been loaded
 def after_load_category_file(category_table: dict) -> dict:
+    category_table[arcade_location_category_name] = {"hidden": True}
     return category_table
 
 

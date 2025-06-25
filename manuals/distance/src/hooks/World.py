@@ -1,5 +1,13 @@
 # Object classes from AP core, to represent an entire MultiWorld and this individual World that's part of it
-from ..spec import campaigns, filler_item_names, get_campaign_key_name
+from .spec import (
+    campaigns,
+    filler_item_names,
+    get_campaign_key_name,
+    arcade_levels,
+    arcade_item_category_name,
+    arcade_location_category_name,
+)
+from .state import Sampler, player_arcade_samples
 from worlds.AutoWorld import World
 from BaseClasses import MultiWorld, CollectionState, Item
 
@@ -43,7 +51,18 @@ def hook_get_filler_item_name(world: World, multiworld: MultiWorld, player: int)
 
 # Called before regions and locations are created. Not clear why you'd want this, but it's here. Victory location is included, but Victory event is not placed yet.
 def before_create_regions(world: World, multiworld: MultiWorld, player: int):
-    pass
+    sampled_levels = multiworld.random.sample(arcade_levels, k=20)
+
+    player_arcade_samples[player] = Sampler(
+        item_category=arcade_item_category_name,
+        items={level.item_name for level in sampled_levels},
+        location_category=arcade_location_category_name,
+        locations={
+            location_name
+            for level in sampled_levels
+            for location_name in level.location_names
+        },
+    )
 
 # Called after regions and locations are created, in case you want to see or modify that information. Victory location is included.
 def after_create_regions(world: World, multiworld: MultiWorld, player: int):
