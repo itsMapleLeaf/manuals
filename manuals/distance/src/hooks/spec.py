@@ -254,7 +254,7 @@ class DistanceWorldSpec(WorldSpec):
         for campaign_name, levels in campaigns.items():
             campaign_key_item = self.item(
                 name=get_campaign_key_name(campaign_name),
-                category="Campaign Keys",
+                category="Decryption",
                 count=keys_per_campaign,
                 progression=True,
             )
@@ -266,6 +266,7 @@ class DistanceWorldSpec(WorldSpec):
                     name=f"{level_name} [{campaign_name}]",
                     category=f"Campaign - {campaign_name}",
                     requires=requires.item(campaign_key_item, "50%"),
+                    dont_place_item=[campaign_key_item["name"]],
                 )
 
             self.location(
