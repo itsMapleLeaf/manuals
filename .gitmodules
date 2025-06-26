@@ -1,3 +1,6 @@
 [submodule "Archipelago"]
 	path = Archipelago
 	url = https://github.com/ArchipelagoMW/Archipelago
+[submodule "Manual"]
+	path = Manual
+	url = https://github.com/ManualForArchipelago/Manual
