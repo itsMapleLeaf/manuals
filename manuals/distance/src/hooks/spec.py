@@ -266,14 +266,14 @@ class DistanceWorldSpec(WorldSpec):
                     name=f"{level_name} [{campaign_name}]",
                     category=f"Campaign - {campaign_name}",
                     requires=requires.item(campaign_key_item, "50%"),
-                    dont_place_item=[campaign_key_item["name"]],
+                    dont_place_item=[campaign_key_item.name],
                 )
 
             self.location(
                 name=f"{completion_level} [{campaign_name}]",
                 category=f"Campaign - {campaign_name}",
                 requires=requires.item(campaign_key_item, "50%"),
-                place_item=[campaign_completion_item["name"]],
+                place_item=[campaign_completion_item.name],
             )
 
         self.location(

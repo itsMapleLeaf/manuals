@@ -2,6 +2,9 @@ from dataclasses import dataclass
 from typing import Literal, TypedDict, NotRequired
 
 
+type OptionData = ToggleOptionData | ChoiceOptionData | RangeOptionData
+
+
 class BaseOptionData(TypedDict):
     description: NotRequired[str | list[str]]
     """Description text explaining what this option does"""
@@ -72,6 +75,3 @@ class RangeOptionData(RangeOptionArgs):
 class RangeOptionSpec:
     name: str
     args: RangeOptionArgs
-
-
-type OptionData = ToggleOptionData | ChoiceOptionData | RangeOptionData

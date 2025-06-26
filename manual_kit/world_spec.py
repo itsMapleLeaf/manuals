@@ -1,5 +1,8 @@
+from dataclasses import dataclass
 from typing import Optional, Unpack
 
+from .requires import Requirement
+from .tables import WorldSpecDict, WorldSpecList
 from .options import (
     ChoiceOptionArgs,
     ChoiceOptionData,
@@ -12,60 +15,62 @@ from .options import (
     ToggleOptionData,
     ToggleOptionSpec,
 )
-from .location import LocationArgs, LocationData, Requirement, Requires
-from .item import ItemArgs, ItemData
-from .category import CategoryArgs, CategoryData
-
-requires = Requires()
+from .location import LocationArgs, LocationData, LocationSpec
+from .item import ItemArgs, ItemData, ItemSpec
+from .category import CategoryArgs, CategoryData, CategorySpec
 
 
-class WorldSpecTable[T]:
-    def __init__(self, name: str) -> None:
-        self.name = name
-        self.items: dict[str, T] = {}
-
-    def add(self, name: str, item: T) -> T:
-        if name in self.items:
-            raise Exception(f"Item {name} already exists in {self.name}")
-
-        self.items[name] = item
-        return item
-
-
+@dataclass
 class WorldSpec:
-    def __init__(self) -> None:
-        self.items: list[ItemData] = []
-        self.locations: list[LocationData] = []
-        self.categories: dict[str, CategoryData] = {}
+    name: str
+    creator: str
+
+    def __post_init__(self) -> None:
+        self.item_table = WorldSpecList[ItemData, ItemSpec](
+            "items", lambda _, data: ItemSpec(data)
+        )
+        self.location_table = WorldSpecDict[LocationData, LocationSpec](
+            "locations", lambda _, data: LocationSpec(data)
+        )
+        self.category_table = WorldSpecDict[CategoryData, CategorySpec](
+            "categories", CategorySpec
+        )
         self.user_options: dict[str, OptionData] = {}
 
     @property
     def item_count(self) -> int:
-        return sum(item.get("count", 0) for item in self.items)
+        return sum(item.get("count", 1) for item in self.item_table.values)
 
-    def item(self, name: str, **kwargs: Unpack[ItemArgs]) -> ItemData:
-        item = ItemData(name=name, **kwargs)
-        self.items += [item]
-        return item
+    @property
+    def items(self) -> list[ItemData]:
+        return self.item_table.data
+
+    def item(self, name: str, **kwargs: Unpack[ItemArgs]) -> ItemSpec:
+        return self.item_table.add(name, ItemData(**kwargs, name=name))
+
+    @property
+    def locations(self) -> dict[str, LocationData]:
+        return self.location_table.data
 
     def location(
         self,
         name: str,
         requires: Optional[str | Requirement] = None,
         **kwargs: Unpack[LocationArgs],
-    ) -> LocationData:
+    ) -> LocationSpec:
         location = LocationData(name=name, **kwargs)
 
         if requires != None:
             location["requires"] = str(requires)
 
-        self.locations += [location]
-        return location
+        return self.location_table.add(name, location)
 
-    def category(self, name: str, **kwargs: Unpack[CategoryArgs]) -> CategoryData:
-        category = CategoryData(name=name, **kwargs)
-        self.categories[name] = category
-        return category
+    @property
+    def categories(self) -> dict[str, CategoryData]:
+        return self.category_table.data
+
+    def category(self, name: str, **kwargs: Unpack[CategoryArgs]) -> CategorySpec:
+        return self.category_table.add(name, CategoryData(**kwargs))
 
     def toggle_option(
         self, name: str, **kwargs: Unpack[ToggleOptionArgs]
