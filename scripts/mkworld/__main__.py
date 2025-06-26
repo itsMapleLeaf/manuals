@@ -42,8 +42,8 @@ world_name = f"manual_{game_info.game}_{game_info.creator}"
 
 apworld_temp_contents_folder = manual.dist / world_name
 
-if apworld_temp_contents_folder.exists():
-    shutil.rmtree(apworld_temp_contents_folder)
+if manual.dist.exists():
+    shutil.rmtree(manual.dist)
 
 copytree_print(manual.src, apworld_temp_contents_folder)
 
