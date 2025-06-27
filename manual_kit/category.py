@@ -10,4 +10,4 @@ class CategoryArgs(TypedDict):
 
 
 class CategoryData(CategoryArgs):
-    pass
+    name: str

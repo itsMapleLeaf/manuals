@@ -24,7 +24,7 @@ class WorldSpec:
     def __init__(self) -> None:
         self.items: list[ItemData] = []
         self.locations: list[LocationData] = []
-        self.categories: dict[str, CategoryData] = {}
+        self.categories: dict[str, CategoryArgs] = {}
         self.user_options: dict[str, OptionData] = {}
 
     @property
@@ -51,9 +51,8 @@ class WorldSpec:
         return location
 
     def category(self, name: str, **kwargs: Unpack[CategoryArgs]) -> CategoryData:
-        category = CategoryData(**kwargs)
-        self.categories[name] = category
-        return category
+        self.categories[name] = kwargs
+        return CategoryData(**kwargs, name=name)
 
     def toggle_option(
         self, name: str, **kwargs: Unpack[ToggleOptionArgs]
