@@ -51,7 +51,7 @@ class WorldSpec:
         return location
 
     def category(self, name: str, **kwargs: Unpack[CategoryArgs]) -> CategoryData:
-        category = CategoryData(name=name, **kwargs)
+        category = CategoryData(**kwargs)
         self.categories[name] = category
         return category
 
