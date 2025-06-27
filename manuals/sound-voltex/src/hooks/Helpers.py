@@ -1,6 +1,5 @@
-from typing import Optional, TYPE_CHECKING, cast
+from typing import Optional, TYPE_CHECKING
 from BaseClasses import MultiWorld
-from ..Globals import PLAYER_SONG_LIBRARIES
 
 if TYPE_CHECKING:
     from ..Items import ManualItem
@@ -9,46 +8,54 @@ if TYPE_CHECKING:
 # Use this if you want to override the default behavior of is_option_enabled
 # Return True to enable the category, False to disable it, or None to use the default behavior
 def before_is_category_enabled(multiworld: MultiWorld, player: int, category_name: str) -> Optional[bool]:
+    if hasattr(multiworld, "generation_is_fake"):
+        return None
+
+    from .state import player_samples
+
+    if category_name.startswith("Song ID"):
+        return category_name in player_samples[player]
+
     return None
 
 # Use this if you want to override the default behavior of is_option_enabled
 # Return True to enable the item, False to disable it, or None to use the default behavior
 def before_is_item_enabled(multiworld: MultiWorld, player: int, item: "ManualItem") -> Optional[bool]:
-    if hasattr(multiworld, "generation_is_fake"):
-        return None
+    # if hasattr(multiworld, "generation_is_fake"):
+    #     return None
 
-    # this is actually a dict i have no fucking idea why it's typed as an instance because it's literaqlly fucking not
-    item_dict = cast(dict, item)
-    categories: list[str] = item_dict.get('category', [])
+    # # this is actually a dict i have no fucking idea why it's typed as an instance because it's literaqlly fucking not
+    # item_dict = cast(dict, item)
+    # categories: list[str] = item_dict.get('category', [])
 
-    if ('Songs' in categories) or ('Goals' in categories):
-        song_identifier = categories[1]
-        # if song_identifier in PLAYER_SONG_LISTS[player]:
-        #     print("enabled item:", item_dict['name'])
-        return any(
-            song_identifier == song.identifier
-            for song in PLAYER_SONG_LIBRARIES[player].chosen_songs
-        )
+    # if ('Songs' in categories) or ('Goals' in categories):
+    #     song_identifier = categories[1]
+    #     # if song_identifier in PLAYER_SONG_LISTS[player]:
+    #     #     print("enabled item:", item_dict['name'])
+    #     return any(
+    #         song_identifier == song.identifier
+    #         for song in PLAYER_SONG_LIBRARIES[player].chosen_songs
+    #     )
 
     return None
 
 # Use this if you want to override the default behavior of is_option_enabled
 # Return True to enable the location, False to disable it, or None to use the default behavior
 def before_is_location_enabled(multiworld: MultiWorld, player: int, location: "ManualLocation") -> Optional[bool]:
-    if hasattr(multiworld, "generation_is_fake"):
-        return None
+    # if hasattr(multiworld, "generation_is_fake"):
+    #     return None
 
-    # this is actually a dict i have no fucking idea why it's typed as an instance because it's literaqlly fucking not
-    location_dict = cast(dict, location)
-    categories: list[str] = location_dict.get('category', [])
+    # # this is actually a dict i have no fucking idea why it's typed as an instance because it's literaqlly fucking not
+    # location_dict = cast(dict, location)
+    # categories: list[str] = location_dict.get('category', [])
 
-    if 'Goals' in categories:
-        song_identifier = categories[1]
-        # if song_identifier in PLAYER_SONG_LISTS[player]:
-        #     print("enabled location:", location_dict['name'])
-        return any(
-            song_identifier == song.identifier
-            for song in PLAYER_SONG_LIBRARIES[player].chosen_songs
-        )
+    # if 'Goals' in categories:
+    #     song_identifier = categories[1]
+    #     # if song_identifier in PLAYER_SONG_LISTS[player]:
+    #     #     print("enabled location:", location_dict['name'])
+    #     return any(
+    #         song_identifier == song.identifier
+    #         for song in PLAYER_SONG_LIBRARIES[player].chosen_songs
+    #     )
 
     return None

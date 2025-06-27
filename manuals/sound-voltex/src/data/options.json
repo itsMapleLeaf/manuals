@@ -18,9 +18,9 @@
         "song_count": {
             "type": "Range",
             "description": "Number of songs to include in the core songs pool",
-            "range_start": 5,
+            "range_start": 50,
             "range_end": 500,
-            "default": 100
+            "default": 80
         },
         "enable_category_sdvx_original": {
             "type": "Toggle",
