@@ -29,7 +29,7 @@ class WorldSpec:
 
     @property
     def item_count(self) -> int:
-        return sum(item.get("count", 0) for item in self.items)
+        return sum(item.get("count", 1) for item in self.items)
 
     def item(self, name: str, **kwargs: Unpack[ItemArgs]) -> ItemData:
         item = ItemData(name=name, **kwargs)
