@@ -183,9 +183,9 @@ class SuperMonkeyBall2WorldSpec(WorldSpec):
         )
 
         for world_index, world in enumerate(self.worlds):
-            for level_index, level in enumerate(world.levels):
+            for level_index, level_name in enumerate(world.levels):
                 level_item = self.item(
-                    name=f"{level_index + 1}. {level} (World {world_index + 1})",
+                    name=f"World {world_index + 1}-{level_index + 1} - {level_name}",
                     category=[f"World {world_index + 1}", "Levels"],
                     progression=True,
                 )
