@@ -189,8 +189,11 @@ class SuperMonkeyBall2WorldSpec(WorldSpec):
                     category=[f"World {world_index + 1}", "Levels"],
                     progression=True,
                 )
-                self.location(
-                    name=level_item["name"],
-                    category=f"World {world_index + 1}",
-                    requires=requires.item(level_item),
-                )
+
+                # add an extra location to fit all the items, plus extra checks are fun
+                for i in range(2):
+                    self.location(
+                        name=f"{level_item["name"]} - {i + 1}",
+                        category=f"World {world_index + 1}",
+                        requires=requires.item(level_item),
+                    )
