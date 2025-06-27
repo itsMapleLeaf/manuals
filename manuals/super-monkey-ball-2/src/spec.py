@@ -86,6 +86,8 @@ class SuperMonkeyBall2WorldSpec(WorldSpec):
     victory_level_required_banana_count = 5
 
     def __init__(self) -> None:
+        super().__init__()
+
         for world_index, world in enumerate(self.worlds):
             world_item = self.item(
                 name=f"{world.name} (World {world_index + 1})",

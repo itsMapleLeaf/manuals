@@ -184,6 +184,7 @@ class OrangeJuiceWorldSpec(WorldSpec):
     board_count_option: RangeOptionSpec
 
     def __init__(self) -> None:
+        super().__init__()
         self.define_characters()
         self.define_boards()
         self.define_oranges()

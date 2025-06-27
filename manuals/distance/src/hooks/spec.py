@@ -225,6 +225,8 @@ def get_campaign_key_name(campaign_name: str):
 
 class DistanceWorldSpec(WorldSpec):
     def __init__(self) -> None:
+        super().__init__()
+
         for level in arcade_levels:
             level_item = self.item(
                 name=level.item_name,

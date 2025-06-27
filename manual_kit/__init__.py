@@ -20,10 +20,12 @@ requires = Requires()
 
 
 class WorldSpec:
-    items: list[ItemData] = []
-    locations: list[LocationData] = []
-    categories: dict[str, CategoryData] = {}
-    user_options: dict[str, OptionData] = {}
+
+    def __init__(self) -> None:
+        self.items: list[ItemData] = []
+        self.locations: list[LocationData] = []
+        self.categories: dict[str, CategoryData] = {}
+        self.user_options: dict[str, OptionData] = {}
 
     @property
     def item_count(self) -> int:
