@@ -11,4 +11,8 @@ manual_data = manual.load_data()
 
 displayed_keys = {"item_table", "location_table", "option_table", "category_table"}
 filtered_data = {k: manual_data[k] for k in displayed_keys}
+filtered_data["item_count"] = sum(
+    item.get("count", 1) for item in manual_data["item_table"]
+)
+filtered_data["location_count"] = len(manual_data["location_table"])
 print(json.dumps(filtered_data, indent="\t"))
