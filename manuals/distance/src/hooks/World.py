@@ -1,13 +1,4 @@
 # Object classes from AP core, to represent an entire MultiWorld and this individual World that's part of it
-from .spec import (
-    campaigns,
-    filler_item_names,
-    get_campaign_key_name,
-    arcade_levels,
-    arcade_item_category_name,
-    arcade_location_category_name,
-)
-from .state import Sampler, player_arcade_samples
 from worlds.AutoWorld import World
 from BaseClasses import MultiWorld, CollectionState, Item
 
@@ -34,35 +25,33 @@ from ..Items import ManualItem
 ## The fill_slot_data method will be used to send data to the Manual client for later use, like deathlink.
 ########################################################################################
 
-campaign_item_names = [
-    get_campaign_key_name(campaign_name) for campaign_name in campaigns.keys()
-]
 
 # Use this function to change the valid filler items to be created to replace item links or starting items.
 # Default value is the `filler_item_name` from game.json
-def hook_get_filler_item_name(world: World, multiworld: MultiWorld, player: int) -> str | bool:
-    # add a chance for a filler to be extra progression,
-    # so the amount of progression items in the world scales with the filler space
-    if world.random.random() < 0.15:
-        return world.random.choice(campaign_item_names)
+def hook_get_filler_item_name(
+    world: World, multiworld: MultiWorld, player: int
+) -> str | bool:
+    from .spec import filler_item_names
 
     # randomize filler names
     return world.random.choice(filler_item_names)
 
+
 # Called before regions and locations are created. Not clear why you'd want this, but it's here. Victory location is included, but Victory event is not placed yet.
 def before_create_regions(world: World, multiworld: MultiWorld, player: int):
-    sampled_levels = multiworld.random.sample(arcade_levels, k=20)
+    from .spec import arcade_levels, default_included_level_count
+    from .state import player_excluded_items, player_excluded_locations
 
-    player_arcade_samples[player] = Sampler(
-        item_category=arcade_item_category_name,
-        items={level.item_name for level in sampled_levels},
-        location_category=arcade_location_category_name,
-        locations={
-            location_name
-            for level in sampled_levels
-            for location_name in level.location_names
-        },
+    included_levels = multiworld.random.sample(
+        arcade_levels, k=default_included_level_count
     )
+    excluded_levels = [level for level in arcade_levels if not level in included_levels]
+
+    player_excluded_items[player] = {level.item["name"] for level in excluded_levels}
+    player_excluded_locations[player] = {
+        location["name"] for level in excluded_levels for location in level.locations
+    }
+
 
 # Called after regions and locations are created, in case you want to see or modify that information. Victory location is included.
 def after_create_regions(world: World, multiworld: MultiWorld, player: int):

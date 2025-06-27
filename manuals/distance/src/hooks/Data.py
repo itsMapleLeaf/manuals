@@ -1,9 +1,6 @@
 from typing import Any
 
-from .spec import DistanceWorldSpec, arcade_location_category_name
-
-
-spec = DistanceWorldSpec()
+from .spec import world_spec
 
 
 # called after the game.json file has been loaded
@@ -14,7 +11,7 @@ def after_load_game_file(game_table: dict) -> dict:
 # called after the items.json file has been loaded, before any item loading or processing has occurred
 # if you need access to the items after processing to add ids, etc., you should use the hooks in World.py
 def after_load_item_file(item_table: list) -> list:
-    item_table += spec.items
+    item_table += world_spec.items
     return item_table
 
 
@@ -27,7 +24,7 @@ def after_load_progressive_item_file(progressive_item_table: list) -> list:
 # called after the locations.json file has been loaded, before any location loading or processing has occurred
 # if you need access to the locations after processing to add ids, etc., you should use the hooks in World.py
 def after_load_location_file(location_table: list) -> list:
-    location_table += spec.locations
+    location_table += world_spec.locations
     return location_table
 
 
@@ -39,7 +36,6 @@ def after_load_region_file(region_table: dict) -> dict:
 
 # called after the categories.json file has been loaded
 def after_load_category_file(category_table: dict) -> dict:
-    category_table[arcade_location_category_name] = {"hidden": True}
     return category_table
 
 
