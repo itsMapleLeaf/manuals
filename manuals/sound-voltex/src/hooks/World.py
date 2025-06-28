@@ -37,10 +37,10 @@ def hook_get_filler_item_name(
 
 # Called before regions and locations are created. Not clear why you'd want this, but it's here. Victory location is included, but Victory event is not placed yet.
 def before_create_regions(world: World, multiworld: MultiWorld, player: int):
-    from .state import player_samples
-    from .songs import Song, SongLoader
+    from .state import player_excluded_items, player_excluded_locations
+    from .spec import SongSpec, world_spec
 
-    sampled_song_count = cast(int, get_option_value(multiworld, player, "song_count"))
+    included_song_count = cast(int, get_option_value(multiworld, player, "song_count"))
     min_difficulty = cast(int, get_option_value(multiworld, player, "min_difficulty"))
     max_difficulty = cast(int, get_option_value(multiworld, player, "max_difficulty"))
 
@@ -61,20 +61,28 @@ def before_create_regions(world: World, multiworld: MultiWorld, player: int):
         if get_option_value(multiworld, player, option_name) == True
     }
 
-    def is_allowed(song: Song):
+    def is_allowed(song: SongSpec):
         is_allowed_chart = any(
-            min_difficulty <= value <= max_difficulty for value in song.charts.values()
+            min_difficulty <= value <= max_difficulty
+            for value in song.data.charts.values()
         )
 
-        has_allowed_category = len(allowed_groups.intersection(song.groups)) > 0
+        has_allowed_group = any(group in allowed_groups for group in song.data.groups)
 
-        return is_allowed_chart or has_allowed_category
+        return is_allowed_chart and has_allowed_group
 
-    allowed_songs = [song for song in SongLoader.load_all_songs() if is_allowed(song)]
+    allowed_songs = [song for song in world_spec.songs if is_allowed(song)]
 
-    player_samples[player] = {
-        f"Song ID {song.id}"
-        for song in multiworld.random.sample(allowed_songs, k=sampled_song_count)
+    included_songs = multiworld.random.sample(allowed_songs, k=included_song_count)
+    included_song_ids = {song.data.id for song in included_songs}
+
+    excluded_songs = [
+        song for song in world_spec.songs if not song.data.id in included_song_ids
+    ]
+
+    player_excluded_items[player] = {song.item["name"] for song in excluded_songs}
+    player_excluded_locations[player] = {
+        song.location["name"] for song in excluded_songs
     }
 
 
