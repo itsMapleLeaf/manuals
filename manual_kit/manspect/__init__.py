@@ -1,5 +1,7 @@
-from typing import Callable, TypedDict
-import json
+from dataclasses import dataclass
+import importlib
+import sys
+from typing import Callable
 import os
 from pathlib import Path
 import tempfile
@@ -55,9 +57,7 @@ class ManspectEnvironment:
 
 def inspect_manual(
     manual_world_path: str | Path,
-    python_bin_path: str | Path,
     archipelago_repo_path: str | Path,
-    log: LogFn,
 ):
     world_zip = ZipFile(manual_world_path, mode="r")
 
@@ -65,36 +65,26 @@ def inspect_manual(
         world_zip.extractall(temp_world_folder)
         world_name = os.listdir(temp_world_folder)[0]
 
-        with tempfile.NamedTemporaryFile(
-            mode="w",
-            dir=Path(temp_world_folder) / world_name,
-            suffix=".py",
-            delete_on_close=False,
-        ) as data_loader_file:
-            data_loader_template = Path(__file__).parent / "data_loader.template.py"
+        original_path = sys.path.copy()
+        try:
+            sys.path += [temp_world_folder, str(archipelago_repo_path)]
+            data_module = importlib.import_module(".Data", world_name)
+        finally:
+            sys.path = original_path
 
-            data_loader_file.write(data_loader_template.read_text())
-            data_loader_file.close()
-
-            (data_loader_module_name, _) = os.path.splitext(
-                os.path.basename(data_loader_file.name)
-            )
-
-            subprocess_env = {
-                **os.environ,
-                "PYTHONPATH": str(archipelago_repo_path),
-            }
-
-            log("Collecting world data...")
-            output_json = subprocess.check_output(
-                [python_bin_path, "-m", f"{world_name}.{data_loader_module_name}"],
-                cwd=temp_world_folder,
-                env=subprocess_env,
-            )
-            return ManualData(**json.loads(output_json))
+        return ManualData(
+            game=data_module.game_table,
+            items=data_module.item_table,
+            locations=data_module.location_table,
+            regions=data_module.region_table,
+            categories=data_module.category_table,
+            options=data_module.option_table,
+            meta=data_module.meta_table,
+        )
 
 
-class ManualData(TypedDict):
+@dataclass
+class ManualData:
     game: dict[str, object]
     items: list[ItemData]
     locations: list[LocationData]

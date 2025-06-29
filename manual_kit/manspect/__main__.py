@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from dataclasses import dataclass
+import dataclasses
 import json
 from pathlib import Path
 import sys
@@ -46,27 +47,25 @@ def main():
     environment = ManspectEnvironment(log=log)
     environment.bootstrap()
 
-    output_json = inspect_manual(
+    manual_data = inspect_manual(
         manual_world_path=args.world,
-        python_bin_path=environment.python_bin_path,
         archipelago_repo_path=environment.archipelago_repo_path,
-        log=log,
     )
 
-    output_json = json.dumps(
-        output_json,
+    manual_data_json = json.dumps(
+        dataclasses.asdict(manual_data),
         indent="\t",
         ensure_ascii=False,  # preserve special characters
     )
 
     if not args.file:
-        print(output_json)
+        print(manual_data_json)
         return
 
     output_path = Path.cwd() / args.file
 
     with open(output_path, mode="w", encoding="utf-8") as output_file:
-        output_file.write(output_json)
+        output_file.write(manual_data_json)
 
     print(f"Output saved to {output_path.relative_to(Path.cwd())}")
 
