@@ -44,7 +44,7 @@ class SongSpec:
             world_spec.location(
                 f"{item_name} ({"/".join(map(str, chart_levels))}) - {i + 1}",
                 requires=requires.category(self.category),
-                category=["Songs"],
+                category=[f"Songs - {item_name}"],
             )
             for i in range(2)
         ]
