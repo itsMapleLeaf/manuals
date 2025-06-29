@@ -113,6 +113,8 @@ arcade_level_names = {
         "Shrine",
         "Liminal",
         "White Lightning Returns",
+    ],
+    "Nightmare Fuel": [
         "Affect",
         "The Night Before",
         "Industrial Fury",
