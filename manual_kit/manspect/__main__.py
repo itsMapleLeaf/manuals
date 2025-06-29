@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 
 
-from . import ManspectEnvironment, inspect_manual
+from . import ManspectEnvironment, inspect_apworld
 
 
 @dataclass(init=False)
@@ -47,7 +47,7 @@ def main():
     environment = ManspectEnvironment(log=log)
     environment.bootstrap()
 
-    manual_data = inspect_manual(
+    manual_data = inspect_apworld(
         manual_world_path=args.world,
         archipelago_repo_path=environment.archipelago_repo_path,
     )

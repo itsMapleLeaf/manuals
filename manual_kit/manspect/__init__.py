@@ -55,34 +55,6 @@ class ManspectEnvironment:
             )
 
 
-def inspect_manual(
-    manual_world_path: str | Path,
-    archipelago_repo_path: str | Path,
-):
-    world_zip = ZipFile(manual_world_path, mode="r")
-
-    with tempfile.TemporaryDirectory() as temp_world_folder:
-        world_zip.extractall(temp_world_folder)
-        world_name = os.listdir(temp_world_folder)[0]
-
-        original_path = sys.path.copy()
-        try:
-            sys.path += [temp_world_folder, str(archipelago_repo_path)]
-            data_module = importlib.import_module(".Data", world_name)
-        finally:
-            sys.path = original_path
-
-        return ManualData(
-            game=data_module.game_table,
-            items=data_module.item_table,
-            locations=data_module.location_table,
-            regions=data_module.region_table,
-            categories=data_module.category_table,
-            options=data_module.option_table,
-            meta=data_module.meta_table,
-        )
-
-
 @dataclass
 class ManualData:
     game: dict[str, object]
@@ -92,3 +64,37 @@ class ManualData:
     categories: dict[str, CategoryData]
     options: dict[str, object]
     meta: dict[str, object]
+
+
+def inspect_apworld(manual_world_path: str | Path, archipelago_repo_path: str | Path):
+    with tempfile.TemporaryDirectory() as temp_world_folder:
+        with ZipFile(manual_world_path, mode="r") as world_zip:
+            world_zip.extractall(temp_world_folder)
+
+        world_name = os.listdir(temp_world_folder)[0]
+
+        return inspect_from_source(
+            source_dir=Path(temp_world_folder) / world_name,
+            archipelago_repo_path=archipelago_repo_path,
+        )
+
+
+def inspect_from_source(source_dir: str | Path, archipelago_repo_path: str | Path):
+    source_dir = Path(source_dir)
+
+    original_sys_path = sys.path.copy()
+    try:
+        sys.path += [str(source_dir.parent), str(archipelago_repo_path)]
+        data_module = importlib.import_module(".Data", source_dir.stem)
+    finally:
+        sys.path = original_sys_path
+
+    return ManualData(
+        game=data_module.game_table,
+        items=data_module.item_table,
+        locations=data_module.location_table,
+        regions=data_module.region_table,
+        categories=data_module.category_table,
+        options=data_module.option_table,
+        meta=data_module.meta_table,
+    )

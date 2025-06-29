@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import os
 from pathlib import Path
 from typing import TypedDict
-from manual_kit import CategoryData, LocationData, ItemData
+from manual_kit import CategoryData, LocationData, ItemData, manspect
 
 from .paths import ARCHIPELAGO_FOLDER, PROJECT_ROOT
 
@@ -28,39 +28,10 @@ class ManualDefinition:
         return self.root / "dist"
 
     def load_data(self):
-        import tempfile
-        import json
-        import subprocess
-        import textwrap
-
-        with open(Path(__file__).parent / "data_loader.py") as data_loader_file:
-            data_loader_script = data_loader_file.read()
-
-        with tempfile.NamedTemporaryFile(
-            mode="w",
-            suffix=".py",
-            dir=self.src,
-            delete_on_close=False,
-        ) as temp_file:
-            temp_file.write(data_loader_script)
-            temp_file.close()
-            (temp_module, _) = os.path.splitext(os.path.basename(temp_file.name))
-
-            python_paths = [
-                PROJECT_ROOT,
-                ARCHIPELAGO_FOLDER,
-            ]
-
-            data_json = subprocess.check_output(
-                ["uv", "run", "-m", f"src.{temp_module}"],
-                cwd=self.root,
-                env={
-                    **os.environ.copy(),
-                    "PYTHONPATH": ";".join(map(str, python_paths)),
-                },
-            )
-
-        return ManualData(**json.loads(data_json))
+        return manspect.inspect_from_source(
+            self.src,
+            archipelago_repo_path=ARCHIPELAGO_FOLDER,
+        )
 
 
 class ManualData(TypedDict):
