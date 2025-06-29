@@ -82,7 +82,7 @@ def before_create_regions(world: World, multiworld: MultiWorld, player: int):
 
     player_excluded_items[player] = {song.item["name"] for song in excluded_songs}
     player_excluded_locations[player] = {
-        song.location["name"] for song in excluded_songs
+        location["name"] for song in excluded_songs for location in song.locations
     }
 
 

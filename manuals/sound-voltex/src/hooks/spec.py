@@ -40,11 +40,14 @@ class SongSpec:
             category=["Songs", self.category["name"]],
         )
 
-        self.location = world_spec.location(
-            f"{item_name} ({"/".join(map(str, chart_levels))}) - Track Clear",
-            requires=requires.category(self.category),
-            category=["Songs"],
-        )
+        self.locations = [
+            world_spec.location(
+                f"{item_name} ({"/".join(map(str, chart_levels))}) - {i + 1}",
+                requires=requires.category(self.category),
+                category=["Songs"],
+            )
+            for i in range(2)
+        ]
 
 
 class SoundVoltexWorldSpec(WorldSpec):
