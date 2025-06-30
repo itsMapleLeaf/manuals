@@ -200,7 +200,7 @@ campaigns = {
     ],
 }
 
-keys_per_campaign = 5
+keys_per_campaign = 10
 
 campaign_completion_item = world_spec.item(
     name=f"Campaign Completion",
@@ -222,7 +222,7 @@ for campaign_name, level_names in campaigns.items():
         campaign_level_location = world_spec.location(
             name=f"{level_name} [{campaign_name}]",
             category=f"Campaign - {campaign_name}",
-            requires=requires.item(campaign_key_item, "all"),
+            requires=requires.item(campaign_key_item, "half"),
         )
 
         if level_index == len(level_names) - 1:
