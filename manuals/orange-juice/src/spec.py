@@ -217,9 +217,9 @@ class OrangeJuiceWorldSpec(WorldSpec):
                     requires=requires.item(item),
                 )
 
-            for level in [2, 3, 4, 5]:
+            for game_count in [1, 2]:
                 self.location(
-                    f"{character.name} - Reach Level {level}",
+                    f"Play {game_count} games as {character.name}",
                     category=character_category,
                     requires=requires.opt_all(requires.item(item)),
                 )
@@ -259,15 +259,15 @@ class OrangeJuiceWorldSpec(WorldSpec):
     def define_achievements(self):
         for achievement in [
             "Win 10 games",
-            "Achieve 50 normas",
-            "Achieve 20 win normas",
-            "Achieve 20 star normas",
+            "Complete 50 normas",
+            "Complete 20 win normas",
+            "Complete 20 star normas",
             "Collect 10,000 stars",
             "Gain 100 wins",
             "Defeat the field boss",
             "Play 50 mushrooms",
             "Bounty Hunt - Slay 50 monsters",
-            "Bounty Hunt - Acquire 50 fame",
+            "Bounty Hunt - Acquire 120 fame",
         ]:
             self.location(achievement, category="Achievements")
 
