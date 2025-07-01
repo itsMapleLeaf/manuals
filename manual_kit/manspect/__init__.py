@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 import importlib
+import importlib.util
+import random
 import sys
 from typing import Callable
 import os
@@ -79,17 +81,27 @@ def inspect_apworld(manual_world_path: str | Path, archipelago_repo_path: str | 
         )
 
 
-def inspect_from_source(source_dir: str | Path, archipelago_repo_path: str | Path):
+def inspect_from_source(
+    source_dir: str | Path, archipelago_repo_path: str | Path
+) -> ManualData:
     source_dir = Path(source_dir)
 
-    original_sys_path = sys.path.copy()
-    try:
-        sys.path += [str(source_dir.parent), str(archipelago_repo_path)]
-        data_module = importlib.import_module(".Data", source_dir.stem)
-    finally:
-        sys.path = original_sys_path
+    module_name = f"manual_data_{random.randbytes(16).hex()}"
 
-    return ManualData(
+    spec = importlib.util.spec_from_file_location(
+        name=module_name,
+        location=source_dir / "Data.py",
+        submodule_search_locations=[str(source_dir)],
+    )
+
+    if not spec or not spec.loader:
+        raise Exception(f"Failed to create module spec for {source_dir / "Data.py"}")
+
+    data_module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = data_module
+    spec.loader.exec_module(data_module)
+
+    manual_data = ManualData(
         game=data_module.game_table,
         items=data_module.item_table,
         locations=data_module.location_table,
@@ -98,3 +110,7 @@ def inspect_from_source(source_dir: str | Path, archipelago_repo_path: str | Pat
         options=data_module.option_table,
         meta=data_module.meta_table,
     )
+
+    del sys.modules[module_name]
+
+    return manual_data
