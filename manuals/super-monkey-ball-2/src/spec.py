@@ -182,11 +182,15 @@ class SuperMonkeyBall2WorldSpec(WorldSpec):
             victory=True,
         )
 
-        for world_index, world in enumerate(self.worlds):
-            for level_index, level_name in enumerate(world.levels):
+        for world_number, world in enumerate(self.worlds):
+            world_number += 1
+
+            for level_number, level_name in enumerate(world.levels):
+                level_number += 1
+
                 level_item = self.item(
-                    name=f"World {world_index + 1}-{level_index + 1} - {level_name}",
-                    category=[f"World {world_index + 1}", "Levels"],
+                    name=f"{world_number}-{level_number} {level_name}",
+                    category=["Levels", f"World {world_number}"],
                     progression=True,
                 )
 
@@ -194,6 +198,6 @@ class SuperMonkeyBall2WorldSpec(WorldSpec):
                 for i in range(2):
                     self.location(
                         name=f"{level_item["name"]} - {i + 1}",
-                        category=f"World {world_index + 1}",
+                        category=f"World {world_number}",
                         requires=requires.item(level_item),
                     )
