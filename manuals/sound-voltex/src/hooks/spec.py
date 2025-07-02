@@ -54,16 +54,26 @@ class SoundVoltexWorldSpec(WorldSpec):
     def __init__(self) -> None:
         super().__init__()
 
-        self.songs = [SongSpec(song, self) for song in SongLoader.songs]
+        score_values = range(100, 1000 + 1, 100)
 
-        for score in range(100, 1000 + 1, 100):
+        score_gate_item = self.item(
+            f"Progressive VOLFORCE Gate",
+            category="Progressive VOLFORCE Gate",
+            count=len(score_values) * 2,
+            progression=True,
+        )
+
+        for index, score in enumerate(score_values):
             score_location = self.location(
                 f"Reach {score} VOLFORCE",
                 category=["VOLFORCE"],
+                requires=requires.item(score_gate_item, index + 1),
             )
 
             if score == 1000:
                 score_location["victory"] = True
+
+        self.songs = [SongSpec(song, self) for song in SongLoader.songs]
 
 
 world_spec = SoundVoltexWorldSpec()
