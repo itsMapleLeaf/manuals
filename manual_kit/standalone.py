@@ -7,11 +7,10 @@ from dataclasses_json import DataClassJsonMixin
 from .game import GameData
 
 
-class GameDataJson(GameData, DataClassJsonMixin):
-    pass
-
-
 def create_apworld_file(files: dict[str, str]) -> Path:
+    class GameDataJson(GameData, DataClassJsonMixin):
+        pass
+
     manual_src_dir = Path(__file__).parent / "Manual/src"
     output_dir = Path.cwd()
 

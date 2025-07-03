@@ -8,11 +8,10 @@ from ..lib.manuals import ProjectManual
 from ..lib.paths import MANUAL_KIT_FOLDER, MANUAL_KIT_NAME, PROJECT_ROOT
 
 
-class GameDataJson(GameData, DataClassJsonMixin):
-    pass
-
-
 def generate_world(manual: ProjectManual):
+    class GameDataJson(GameData, DataClassJsonMixin):
+        pass
+
     def copytree_print(source: str | Path, destination: str | Path, *args, **kwargs):
         relative_source = Path(source).relative_to(PROJECT_ROOT)
         relative_destination = Path(destination).relative_to(PROJECT_ROOT)
