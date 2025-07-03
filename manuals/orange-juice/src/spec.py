@@ -178,17 +178,18 @@ class OrangeJuiceWorldSpec(WorldSpec):
     ]
 
     total_oranges = sum(item.count * item.value for item in orange_item_specs)
-    required_oranges_for_victory = int(total_oranges * (3 / 4))
+    required_oranges_for_victory = int(total_oranges / 2)
 
     character_count_option: RangeOptionSpec
     board_count_option: RangeOptionSpec
 
     def __init__(self) -> None:
+        super().__init__()
         self.define_characters()
         self.define_boards()
         self.define_oranges()
         self.define_victory_location()
-        self.define_achievements()
+        # self.define_achievements()
 
     def define_characters(self):
         self.character_count_option = self.range_option(
@@ -197,7 +198,7 @@ class OrangeJuiceWorldSpec(WorldSpec):
             description="The number of randomly selected characters added to the pool",
             range_start=5,
             range_end=len(self.characters),
-            default=30,
+            default=40,
         )
 
         for character in self.characters.values():
@@ -216,9 +217,9 @@ class OrangeJuiceWorldSpec(WorldSpec):
                     requires=requires.item(item),
                 )
 
-            for level in [2, 3, 4, 5]:
+            for game_count in [1, 2]:
                 self.location(
-                    f"{character.name} - Reach Level {level}",
+                    f"Play {game_count} {"game" if game_count == 1 else "games"} as {character.name}",
                     category=character_category,
                     requires=requires.opt_all(requires.item(item)),
                 )
@@ -239,11 +240,13 @@ class OrangeJuiceWorldSpec(WorldSpec):
                 category="Boards",
                 progression=True,
             )
-            self.location(
-                f"Play a game on {board.name}",
-                category=f"Boards - {board.name}",
-                requires=requires.opt_all(requires.item(board_item)),
-            )
+
+            for game_count in [1, 2]:
+                self.location(
+                    f"Play {game_count} game{"" if game_count == 1 else "s"} on {board.name}",
+                    category=f"Boards - {board.name}",
+                    requires=requires.opt_all(requires.item(board_item)),
+                )
 
     def define_oranges(self):
         for item in self.orange_item_specs:
@@ -258,15 +261,15 @@ class OrangeJuiceWorldSpec(WorldSpec):
     def define_achievements(self):
         for achievement in [
             "Win 10 games",
-            "Achieve 50 normas",
-            "Achieve 20 win normas",
-            "Achieve 20 star normas",
+            "Complete 50 normas",
+            "Complete 20 win normas",
+            "Complete 20 star normas",
             "Collect 10,000 stars",
             "Gain 100 wins",
             "Defeat the field boss",
             "Play 50 mushrooms",
             "Bounty Hunt - Slay 50 monsters",
-            "Bounty Hunt - Acquire 50 fame",
+            "Bounty Hunt - Acquire 120 fame",
         ]:
             self.location(achievement, category="Achievements")
 

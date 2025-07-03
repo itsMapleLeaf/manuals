@@ -22,8 +22,8 @@ from .category import CategoryArgs, CategoryData, CategorySpec
 
 @dataclass
 class WorldSpec:
-    name: str
-    creator: str
+    # name: str
+    # creator: str
 
     def __post_init__(self) -> None:
         self.item_table = WorldSpecList[ItemData, ItemSpec](

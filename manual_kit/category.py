@@ -1,4 +1,5 @@
-from typing import Final, NotRequired, TypedDict
+from dataclasses import dataclass
+from typing import NotRequired, TypedDict
 
 
 class CategoryArgs(TypedDict):
@@ -13,7 +14,7 @@ class CategoryData(CategoryArgs):
     pass
 
 
+@dataclass
 class CategorySpec:
-    def __init__(self, name: str, data: CategoryData) -> None:
-        self.name: Final = name
-        self.data: Final = data
+    name: str
+    data: CategoryData

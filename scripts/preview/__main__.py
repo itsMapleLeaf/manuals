@@ -1,3 +1,4 @@
+import dataclasses
 import json
 import sys
 
@@ -9,6 +10,12 @@ manual_arg = sys.argv[1]
 manual = MANUALS[manual_arg]
 manual_data = manual.load_data()
 
-displayed_keys = {"item_table", "location_table", "option_table", "category_table"}
-filtered_data = {k: manual_data[k] for k in displayed_keys}
-print(json.dumps(filtered_data, indent="\t"))
+json.dump(
+    {
+        "item_count": sum(item.get("count", 1) for item in manual_data.items),
+        "location_count": len(manual_data.locations),
+        **dataclasses.asdict(manual_data),
+    },
+    sys.stdout,
+    indent="\t",
+)

@@ -1,7 +1,6 @@
 from typing import cast
 
 # Object classes from AP core, to represent an entire MultiWorld and this individual World that's part of it
-from ..Globals import PLAYER_SONG_LIBRARIES
 from worlds.AutoWorld import World
 from BaseClasses import MultiWorld, CollectionState, Item
 
@@ -15,10 +14,6 @@ from ..Items import ManualItem
 # These helper methods allow you to determine if an option has been set, or what its value is, for any player in the multiworld
 from ..Helpers import get_option_value
 
-# calling logging.info("message") anywhere below in this file will output the message to both console and log file
-
-from ..songs import SongLibrary
-
 ########################################################################################
 ## Order of method calls when the world generates:
 ##    1. create_regions - Creates regions and locations
@@ -31,25 +26,64 @@ from ..songs import SongLibrary
 ## The fill_slot_data method will be used to send data to the Manual client for later use, like deathlink.
 ########################################################################################
 
+
 # Use this function to change the valid filler items to be created to replace item links or starting items.
 # Default value is the `filler_item_name` from game.json
-def hook_get_filler_item_name(world: World, multiworld: MultiWorld, player: int) -> str | bool:
+def hook_get_filler_item_name(
+    world: World, multiworld: MultiWorld, player: int
+) -> str | bool:
     return False
+
 
 # Called before regions and locations are created. Not clear why you'd want this, but it's here. Victory location is included, but Victory event is not placed yet.
 def before_create_regions(world: World, multiworld: MultiWorld, player: int):
-    PLAYER_SONG_LIBRARIES[player] = SongLibrary(
-        multiworld=multiworld,
-        world=world,
-        player=player,
-        chosen_song_count=cast(int, get_option_value(multiworld, player, "song_count")),
-        min_difficulty=cast(
-            int, get_option_value(multiworld, player, "min_difficulty")
-        ),
-        max_difficulty=cast(
-            int, get_option_value(multiworld, player, "max_difficulty")
-        ),
-    )
+    from .state import player_excluded_items, player_excluded_locations
+    from .spec import SongSpec, world_spec
+
+    included_song_count = cast(int, get_option_value(multiworld, player, "song_count"))
+    min_difficulty = cast(int, get_option_value(multiworld, player, "min_difficulty"))
+    max_difficulty = cast(int, get_option_value(multiworld, player, "max_difficulty"))
+
+    song_groups_by_category_option = {
+        "enable_category_sdvx_original": "SDVX Original",
+        "enable_category_floor": "FLOOR",
+        "enable_category_bemani": "BEMANI",
+        "enable_category_other": "Other",
+        "enable_category_touhou_arrange": "Touhou Arrange",
+        "enable_category_vocaloid": "Vocaloid",
+        "enable_category_pops_anime": "Pops & Anime",
+        "enable_category_hinabitter_bandmeshi": "Hinabitter♪/BandMeshi♪",
+    }
+
+    allowed_groups = {
+        group
+        for option_name, group in song_groups_by_category_option.items()
+        if get_option_value(multiworld, player, option_name) == True
+    }
+
+    def is_allowed(song: SongSpec):
+        is_allowed_chart = any(
+            min_difficulty <= value <= max_difficulty
+            for value in song.data.charts.values()
+        )
+
+        has_allowed_group = any(group in allowed_groups for group in song.data.groups)
+
+        return is_allowed_chart and has_allowed_group
+
+    allowed_songs = [song for song in world_spec.songs if is_allowed(song)]
+
+    included_songs = multiworld.random.sample(allowed_songs, k=included_song_count)
+    included_song_ids = {song.data.id for song in included_songs}
+
+    excluded_songs = [
+        song for song in world_spec.songs if not song.data.id in included_song_ids
+    ]
+
+    player_excluded_items[player] = {song.item.name for song in excluded_songs}
+    player_excluded_locations[player] = {
+        location.name for song in excluded_songs for location in song.locations
+    }
 
 
 # Called after regions and locations are created, in case you want to see or modify that information. Victory location is included.

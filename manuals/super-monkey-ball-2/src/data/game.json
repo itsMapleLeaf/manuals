@@ -1,12 +1,12 @@
 {
     "$schema": "https://github.com/ManualForArchipelago/Manual/raw/main/schemas/Manual.game.schema.json",
-    "game": "Super Monkey Ball 2",
+    "game": "SuperMonkeyBall2_dev",
     "creator": "MapleLeaf",
     "filler_item_name": "Rotten Banana",
     "starting_items": [
         {
-            "item_categories": ["Worlds"],
-            "random": 1
+            "item_categories": ["Levels"],
+            "random": 5
         }
     ],
     "death_link": false

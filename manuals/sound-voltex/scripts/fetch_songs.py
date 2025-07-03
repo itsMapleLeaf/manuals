@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 import os
 from pathlib import Path
 import aiohttp
@@ -17,10 +18,9 @@ async def fetch_all_songs(page_count: int):
             fetch_page_songs(session, page_index + 1)
             for page_index in range(page_count)
         ]
-        for result_index, page_songs in enumerate(await asyncio.gather(*tasks)):
+
+        for page_songs in await asyncio.gather(*tasks):
             songs += page_songs
-            # todo: print this on future finish
-            print(f"fetched {len(songs)} songs ({result_index+1}/{page_count})")
 
     return songs
 
@@ -32,7 +32,11 @@ async def fetch_page_songs(session: aiohttp.ClientSession, page_number: int):
         html_content = await response.text()
 
     soup = BeautifulSoup(html_content, "html5lib")
-    return [parse_song(row) for row in soup.select("#song-table-body > tr")]
+    songs = [parse_song(row) for row in soup.select("#song-table-body > tr")]
+
+    print(f"fetched {len(songs)} songs (page {page_number})")
+
+    return songs
 
 
 def parse_song(row: Tag):
@@ -68,8 +72,13 @@ def parse_song(row: Tag):
             print(f"failed to parse difficulty cell: {cell_text}")
             continue
 
+    hash = hashlib.sha256()
+    hash.update(bytes(title, "utf-8"))
+    hash.update(bytes(artist, "utf-8"))
+    hash.hexdigest()
+
     return Song(
-        identifier=f"{title} by {artist}",
+        id=hash.hexdigest(),
         title=title,
         artist=artist,
         groups=groups,
