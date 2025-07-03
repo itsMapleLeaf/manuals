@@ -16,3 +16,4 @@ from .options import (
     ToggleOptionData,
     ToggleOptionSpec,
 )
+from .game import GameData
