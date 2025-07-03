@@ -31,21 +31,25 @@ from ..Items import ManualItem
 def hook_get_filler_item_name(
     world: World, multiworld: MultiWorld, player: int
 ) -> str | bool:
-    from .spec import filler_item_names
+    from .spec import DistanceWorldSpec
 
     # randomize filler names
-    return world.random.choice(filler_item_names)
+    return world.random.choice(DistanceWorldSpec.filler_item_names)
 
 
 # Called before regions and locations are created. Not clear why you'd want this, but it's here. Victory location is included, but Victory event is not placed yet.
 def before_create_regions(world: World, multiworld: MultiWorld, player: int):
-    from .spec import arcade_levels, default_included_level_count
+    from .spec import DistanceWorldSpec
     from .state import player_excluded_items, player_excluded_locations
 
+    spec = DistanceWorldSpec()
+
     included_levels = multiworld.random.sample(
-        arcade_levels, k=default_included_level_count
+        spec.arcade_levels, spec.default_included_level_count
     )
-    excluded_levels = [level for level in arcade_levels if not level in included_levels]
+    excluded_levels = [
+        level for level in spec.arcade_levels if not level in included_levels
+    ]
 
     player_excluded_items[player] = {level.item.name for level in excluded_levels}
     player_excluded_locations[player] = {
