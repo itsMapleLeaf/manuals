@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import os
 from pathlib import Path
-from ...manual_kit.manspect import Manspect
+from manual_kit.manspect import Manspect
 
 from .paths import ARCHIPELAGO_FOLDER, PROJECT_ROOT
 
