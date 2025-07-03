@@ -1,8 +1,7 @@
 from dataclasses import dataclass
-from dataclasses_json import DataClassJsonMixin
 
 
 @dataclass
-class GameData(DataClassJsonMixin):
+class GameData:
     game: str
     creator: str

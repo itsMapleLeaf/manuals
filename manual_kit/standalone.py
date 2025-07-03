@@ -2,8 +2,13 @@ import os
 from pathlib import Path
 import shutil
 from tempfile import TemporaryDirectory
+from dataclasses_json import DataClassJsonMixin
 
 from .game import GameData
+
+
+class GameDataJson(GameData, DataClassJsonMixin):
+    pass
 
 
 def create_apworld_file(files: dict[str, str]) -> Path:
@@ -21,7 +26,7 @@ def create_apworld_file(files: dict[str, str]) -> Path:
             os.makedirs(file_path.parent, exist_ok=True)
             file_path.write_text(file_content)
 
-        game_data = GameData.from_json(
+        game_data = GameDataJson.from_json(
             Path(temp_src_dir / "data/game.json").read_bytes(),
         )
 

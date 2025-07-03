@@ -1,10 +1,15 @@
 import os
 from pathlib import Path
 import shutil
+from dataclasses_json import DataClassJsonMixin
 from manual_kit import GameData
 
 from ..lib.manuals import ProjectManual
 from ..lib.paths import MANUAL_KIT_FOLDER, MANUAL_KIT_NAME, PROJECT_ROOT
+
+
+class GameDataJson(GameData, DataClassJsonMixin):
+    pass
 
 
 def generate_world(manual: ProjectManual):
@@ -18,7 +23,7 @@ def generate_world(manual: ProjectManual):
         os.getenv("OUTPUT_FOLDER") or "C:/ProgramData/Archipelago/custom_worlds"
     )
 
-    game_info = GameData.from_json(
+    game_info = GameDataJson.from_json(
         (manual.data_folder / "game.json").read_text("utf-8")
     )
     world_name = f"manual_{game_info.game}_{game_info.creator}"
