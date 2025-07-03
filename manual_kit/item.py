@@ -52,3 +52,4 @@ class ItemSpec:
     def __init__(self, data: ItemData) -> None:
         self.name: Final = data["name"]
         self.data: Final = data
+        self.count: Final = data.get("count", 1)

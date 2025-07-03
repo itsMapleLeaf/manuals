@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import Optional, Unpack
 
 from .requires import Requirement
-from .tables import WorldSpecDict, WorldSpecList
 from .options import (
     ChoiceOptionArgs,
     ChoiceOptionData,
@@ -22,35 +21,30 @@ from .category import CategoryArgs, CategoryData, CategorySpec
 
 @dataclass
 class WorldSpec:
-    # name: str
-    # creator: str
-
     def __post_init__(self) -> None:
-        self.item_table = WorldSpecList[ItemData, ItemSpec](
-            "items", lambda _, data: ItemSpec(data)
-        )
-        self.location_table = WorldSpecDict[LocationData, LocationSpec](
-            "locations", lambda _, data: LocationSpec(data)
-        )
-        self.category_table = WorldSpecDict[CategoryData, CategorySpec](
-            "categories", CategorySpec
-        )
+        self.__items: dict[str, ItemSpec] = {}
+        self.__locations: dict[str, LocationSpec] = {}
+        self.__categories: dict[str, CategorySpec] = {}
         self.user_options: dict[str, OptionData] = {}
 
     @property
-    def item_count(self) -> int:
-        return sum(item.get("count", 1) for item in self.item_table.values)
+    def items(self) -> list[ItemData]:
+        return [item.data for item in self.__items.values()]
 
     @property
-    def items(self) -> list[ItemData]:
-        return self.item_table.data
+    def locations(self) -> list[LocationData]:
+        return [location.data for location in self.__locations.values()]
+
+    @property
+    def categories(self) -> dict[str, CategoryData]:
+        return {name: category.data for name, category in self.__categories.items()}
+
+    @property
+    def item_count(self) -> int:
+        return sum(item.count for item in self.__items.values())
 
     def item(self, name: str, **kwargs: Unpack[ItemArgs]) -> ItemSpec:
-        return self.item_table.add(name, ItemData(**kwargs, name=name))
-
-    @property
-    def locations(self) -> dict[str, LocationData]:
-        return self.location_table.data
+        return self.__set_unique(self.__items, name, ItemSpec({**kwargs, "name": name}))
 
     def location(
         self,
@@ -58,19 +52,15 @@ class WorldSpec:
         requires: Optional[str | Requirement] = None,
         **kwargs: Unpack[LocationArgs],
     ) -> LocationSpec:
-        location = LocationData(name=name, **kwargs)
-
+        location = self.__set_unique(
+            self.__locations, name, LocationSpec({**kwargs, "name": name})
+        )
         if requires != None:
-            location["requires"] = str(requires)
-
-        return self.location_table.add(name, location)
-
-    @property
-    def categories(self) -> dict[str, CategoryData]:
-        return self.category_table.data
+            location.data["requires"] = str(requires)
+        return location
 
     def category(self, name: str, **kwargs: Unpack[CategoryArgs]) -> CategorySpec:
-        return self.category_table.add(name, CategoryData(**kwargs))
+        return self.__set_unique(self.__categories, name, CategorySpec(name, kwargs))
 
     def toggle_option(
         self, name: str, **kwargs: Unpack[ToggleOptionArgs]
@@ -89,3 +79,11 @@ class WorldSpec:
     ) -> ChoiceOptionSpec:
         self.user_options[name] = ChoiceOptionData(**kwargs, type="Choice")
         return ChoiceOptionSpec(name, kwargs)
+
+    @staticmethod
+    def __set_unique[T](items: dict[str, T], key: str, value: T) -> T:
+        if key in items:
+            raise Exception(f"{key} already exists")
+
+        items[key] = value
+        return value
