@@ -2,14 +2,15 @@ import os
 from pathlib import Path
 import shutil
 from dataclasses_json import DataClassJsonMixin
-from manual_kit import GameData
+from manual_kit import GameSpec
 
 from ..lib.manuals import ProjectManual
 from ..lib.paths import MANUAL_KIT_FOLDER, MANUAL_KIT_NAME, PROJECT_ROOT
 
 
 def generate_world(manual: ProjectManual):
-    class GameDataJson(GameData, DataClassJsonMixin):
+
+    class JsonGameSpec(GameSpec, DataClassJsonMixin):
         pass
 
     def copytree_print(source: str | Path, destination: str | Path, *args, **kwargs):
@@ -22,10 +23,10 @@ def generate_world(manual: ProjectManual):
         os.getenv("OUTPUT_FOLDER") or "C:/ProgramData/Archipelago/custom_worlds"
     )
 
-    game_info = GameDataJson.from_json(
+    game_spec = JsonGameSpec.from_json(
         (manual.data_folder / "game.json").read_text("utf-8")
     )
-    world_name = f"manual_{game_info.game}_{game_info.creator}"
+    world_name = f"manual_{game_spec.name}_{game_spec.creator}"
 
     apworld_temp_contents_folder = manual.dist / world_name
 

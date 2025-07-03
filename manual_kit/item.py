@@ -1,4 +1,5 @@
-from typing import Final, NotRequired, TypedDict
+from dataclasses import dataclass
+from typing import NotRequired, TypedDict
 
 
 class ItemArgs(TypedDict):
@@ -48,8 +49,14 @@ class ItemData(ItemArgs):
     """The unique name of the item. Do not use (), :, or | in the name"""
 
 
+@dataclass
 class ItemSpec:
-    def __init__(self, data: ItemData) -> None:
-        self.name: Final = data["name"]
-        self.data: Final = data
-        self.count: Final = data.get("count", 1)
+    data: ItemData
+
+    @property
+    def name(self):
+        return self.data["name"]
+
+    @property
+    def count(self):
+        return self.data.get("count", 1)

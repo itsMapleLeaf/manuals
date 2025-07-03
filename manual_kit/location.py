@@ -1,4 +1,5 @@
-from typing import Final, NotRequired, TypedDict
+from dataclasses import dataclass
+from typing import NotRequired, TypedDict
 
 
 class LocationArgs(TypedDict):
@@ -42,7 +43,10 @@ class LocationData(LocationArgs):
     """(Optional) A boolean logic string that describes the required items, counts, etc. needed to reach this location."""
 
 
+@dataclass
 class LocationSpec:
-    def __init__(self, data: LocationData) -> None:
-        self.name: Final = data["name"]
-        self.data: Final = data
+    data: LocationData
+
+    @property
+    def name(self):
+        return self.data["name"]

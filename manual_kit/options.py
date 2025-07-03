@@ -3,6 +3,7 @@ from typing import Literal, TypedDict, NotRequired
 
 
 type OptionData = ToggleOptionData | ChoiceOptionData | RangeOptionData
+type OptionSpec = ToggleOptionSpec | ChoiceOptionSpec | RangeOptionSpec
 
 
 class BaseOptionData(TypedDict):
