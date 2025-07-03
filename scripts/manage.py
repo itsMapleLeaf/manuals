@@ -5,10 +5,10 @@ import subprocess
 
 from .lib.paths import PROJECT_ROOT
 from .mkworld import generate_world
-from .lib.manuals import MANUALS, ManualDefinition
+from .lib.manuals import MANUALS, ProjectManual
 
 
-def main():
+def __main():
     while True:
         action = __input_choice(
             "What would you like to do?",
@@ -29,7 +29,7 @@ def __handle_generate_world():
         for manual in manual_list:
             generate_world(manual)
 
-    def generate_world_for(manual: ManualDefinition):
+    def generate_world_for(manual: ProjectManual):
         return lambda: generate_world(manual)
 
     choices = {manual.name: generate_world_for(manual) for manual in manual_list}
@@ -94,4 +94,7 @@ def __input_choice[Value](heading: str, choices: dict[str, Value]) -> Value | No
     return choice_list[choice_index][1]
 
 
-main()
+if __name__ != "__main__":
+    raise Exception("This file can only be run as a script.")
+
+__main()
