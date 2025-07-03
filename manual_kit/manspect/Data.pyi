@@ -1,7 +1,0 @@
-game_table: dict[str, dict]
-item_table: list[dict]
-location_table: list[dict]
-region_table: dict[str, dict]
-category_table: dict[str, dict]
-option_table: dict[str, dict]
-meta_table: dict[str, dict]
