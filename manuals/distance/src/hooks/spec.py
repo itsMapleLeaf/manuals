@@ -29,7 +29,7 @@ class ArcadeLevel:
 
 default_included_level_count = 30
 
-arcade_level_names = {
+arcade_level_data = {
     "Ignition": [
         "Chroma",
         "Vector Valley",
@@ -130,15 +130,37 @@ arcade_level_names = {
         "Glide in the Hole",
         "Inferno",
     ],
+    "Legacy": [
+        "Broken Symmetry",
+        "Lost Society",
+        "Negative Space",
+        "Departure",
+        "Ground Zero",
+        "The Observer Effect",
+        "Aftermath",
+        "Friction",
+        "The Thing About Machines",
+        "Corruption",
+        "Dissolution",
+        "Falling Through",
+        "Monolith",
+        "Destination Unknown",
+        "Rooftops",
+        "Factory",
+        "Stronghold",
+        "Approach",
+        "Continuum",
+        "Escape",
+    ],
 }
 
 arcade_levels = [
     ArcadeLevel(name=level_name, set_name=set_name)
-    for set_name, level_names in arcade_level_names.items()
+    for set_name, level_names in arcade_level_data.items()
     for level_name in level_names
 ]
 
-campaigns = {
+campaign_data = {
     "Adventure": [
         "Instantiation",
         "Cataclysm",
@@ -175,30 +197,6 @@ campaigns = {
         "Terminus",
         "Collapse",
     ],
-    # this is run via Arcade and doesn't actually have a campaign,
-    # but I'm treating it as a campaign because it's more fun to run in order
-    "Legacy": [
-        "Broken Symmetry",
-        "Lost Society",
-        "Negative Space",
-        "Departure",
-        "Ground Zero",
-        "The Observer Effect",
-        "Aftermath",
-        "Friction",
-        "The Thing About Machines",
-        "Corruption",
-        "Dissolution",
-        "Falling Through",
-        "Monolith",
-        "Destination Unknown",
-        "Rooftops",
-        "Factory",
-        "Stronghold",
-        "Approach",
-        "Continuum",
-        "Escape",
-    ],
 }
 
 keys_per_campaign = 10
@@ -206,11 +204,11 @@ keys_per_campaign = 10
 campaign_completion_item = world_spec.item(
     name=f"Campaign Completion",
     category="Campaign Completion",
-    count=len(campaigns),
+    count=len(campaign_data),
     progression=True,
 )
 
-for campaign_name, level_names in campaigns.items():
+for campaign_name, level_names in campaign_data.items():
     campaign_key_item = world_spec.item(
         name=f"Decryption - {campaign_name}",
         category="Decryption",
@@ -223,7 +221,7 @@ for campaign_name, level_names in campaigns.items():
         campaign_level_location = world_spec.location(
             name=f"{level_name} [{campaign_name}]",
             category=f"Campaign - {campaign_name}",
-            requires=requires.item(campaign_key_item, "half"),
+            requires=requires.item(campaign_key_item, "50%"),
         )
 
         if level_index == len(level_names) - 1:

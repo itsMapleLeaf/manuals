@@ -6,7 +6,7 @@
     "starting_items": [
         {
             "item_categories": ["Arcade"],
-            "random": 3
+            "random": 7
         }
     ],
     "death_link": false
