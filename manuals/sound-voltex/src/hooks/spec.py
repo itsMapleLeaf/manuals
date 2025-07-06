@@ -37,7 +37,7 @@ class SongSpec:
         self.item = world_spec.item(
             item_name,
             progression=True,
-            category=["Songs", self.category["name"]],
+            category=["Songs", self.category.name],
         )
 
         self.locations = [
@@ -71,7 +71,7 @@ class SoundVoltexWorldSpec(WorldSpec):
             )
 
             if score == 1000:
-                score_location["victory"] = True
+                score_location.data["victory"] = True
 
         self.songs = [SongSpec(song, self) for song in SongLoader.songs]
 
