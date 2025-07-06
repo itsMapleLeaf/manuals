@@ -1,13 +1,11 @@
 {
-	"game": "SDVX_dev",
+	"game": "SoundVoltex_dev",
 	"creator": "MapleLeaf",
 	"filler_item_name": "you tried (Score +1.0000)",
 	"death_link": false,
 	"starting_items": [
 		{
-			"item_categories": [
-				"Songs"
-			],
+			"item_categories": ["Songs"],
 			"random": 5
 		}
 	]
