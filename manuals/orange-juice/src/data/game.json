@@ -8,11 +8,11 @@
     "starting_items": [
         {
             "item_categories": ["Characters"],
-            "random": 3
+            "random": 5
         },
         {
             "item_categories": ["Boards"],
-            "random": 1
+            "random": 5
         }
     ],
     "death_link": false,
