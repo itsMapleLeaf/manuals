@@ -198,7 +198,7 @@ class OrangeJuiceWorldSpec(WorldSpec):
             description="The number of randomly selected characters added to the pool",
             range_start=5,
             range_end=len(self.characters),
-            default=40,
+            default=20,
         )
 
         for character in self.characters.values():
@@ -231,7 +231,7 @@ class OrangeJuiceWorldSpec(WorldSpec):
             description="The number of randomly selected boards added to the pool",
             range_start=3,
             range_end=len(self.boards),
-            default=10,
+            default=20,
         )
 
         for board in self.boards.values():
