@@ -1,6 +1,5 @@
 from typing import Optional, Unpack
 
-from .game import GameSpec
 from .requires import Requirement
 from .options import (
     ChoiceOptionArgs,
@@ -21,9 +20,8 @@ from .category import CategoryArgs, CategoryData, CategorySpec
 
 class WorldSpec:
 
-    def __init__(self, game_spec: GameSpec | None = None) -> None:
+    def __init__(self) -> None:
         self.category_specs: dict[str, CategorySpec] = {}
-        self.game_spec = game_spec
         self.item_specs: dict[str, ItemSpec] = {}
         self.location_specs: dict[str, LocationSpec] = {}
         self.user_option_specs: dict[str, OptionData] = {}
