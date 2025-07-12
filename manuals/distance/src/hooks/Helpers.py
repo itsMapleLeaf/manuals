@@ -1,4 +1,4 @@
-from typing import Optional, TYPE_CHECKING, cast
+from typing import Optional, TYPE_CHECKING
 from BaseClasses import MultiWorld
 
 if TYPE_CHECKING:
@@ -17,10 +17,10 @@ def before_is_item_enabled(multiworld: MultiWorld, player: int, item: "ManualIte
     if hasattr(multiworld, "generation_is_fake"):
         return None
 
-    from .state import player_excluded_items
+    # from .state import player_excluded_items
 
-    if cast(dict, item)["name"] in player_excluded_items[player]:
-        return False
+    # if cast(dict, item)["name"] in player_excluded_items[player]:
+    #     return False
 
     return None
 
@@ -30,9 +30,9 @@ def before_is_location_enabled(multiworld: MultiWorld, player: int, location: "M
     if hasattr(multiworld, "generation_is_fake"):
         return None
 
-    from .state import player_excluded_locations
+    # from .state import player_excluded_locations
 
-    if cast(dict, location)["name"] in player_excluded_locations[player]:
-        return False
+    # if cast(dict, location)["name"] in player_excluded_locations[player]:
+    #     return False
 
     return None

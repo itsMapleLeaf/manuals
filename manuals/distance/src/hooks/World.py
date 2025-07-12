@@ -39,22 +39,7 @@ def hook_get_filler_item_name(
 
 # Called before regions and locations are created. Not clear why you'd want this, but it's here. Victory location is included, but Victory event is not placed yet.
 def before_create_regions(world: World, multiworld: MultiWorld, player: int):
-    from .spec import DistanceWorldSpec
-    from .state import player_excluded_items, player_excluded_locations
-
-    spec = DistanceWorldSpec()
-
-    included_levels = multiworld.random.sample(
-        spec.arcade_levels, spec.default_included_level_count
-    )
-    excluded_levels = [
-        level for level in spec.arcade_levels if not level in included_levels
-    ]
-
-    player_excluded_items[player] = {level.item.name for level in excluded_levels}
-    player_excluded_locations[player] = {
-        location.name for level in excluded_levels for location in level.locations
-    }
+    pass
 
 
 # Called after regions and locations are created, in case you want to see or modify that information. Victory location is included.

@@ -179,7 +179,7 @@ class ArcadeLevelSpec:
 
     def __post_init__(self, world_spec: "DistanceWorldSpec") -> None:
         self.item = world_spec.item(
-            name=f"{self.name} [{self.set_name}]",
+            name=f"{self.set_name} - {self.name}",
             category="Arcade",
             progression=True,
         )
@@ -187,7 +187,7 @@ class ArcadeLevelSpec:
         self.locations = [
             world_spec.location(
                 name=f"{self.item.name} - Sector {sector_index}",
-                category=[f"Arcade - {self.name} [{self.set_name}]"],
+                category=["Arcade"],
                 requires=requires.item(self.item),
             )
             for sector_index in range(2)
@@ -195,8 +195,13 @@ class ArcadeLevelSpec:
 
 
 class DistanceWorldSpec(WorldSpec):
-    default_included_level_count: Final = 30
-    keys_per_campaign: Final = 10
+    arcade_level_count: Final = sum(
+        len(level_list) for level_list in GameContent.arcade.values()
+    )
+
+    keys_per_campaign: Final[int] = (
+        arcade_level_count // len(GameContent.campaigns) // 2
+    )
 
     filler_item_names: Final = [
         "corruption error",
@@ -234,10 +239,12 @@ class DistanceWorldSpec(WorldSpec):
             progression=True,
         )
 
+        campaign_key_category = "Decryption"
+
         for campaign_name, level_names in GameContent.campaigns.items():
             campaign_key_item = self.item(
                 name=f"Decryption - {campaign_name}",
-                category="Decryption",
+                category=campaign_key_category,
                 count=self.keys_per_campaign,
                 progression=True,
                 local=True,
@@ -245,7 +252,7 @@ class DistanceWorldSpec(WorldSpec):
 
             for level_index, level_name in enumerate(level_names):
                 campaign_level_location = self.location(
-                    name=f"{level_name} [{campaign_name}]",
+                    name=f"{campaign_name} - {level_name}",
                     category=f"Campaign - {campaign_name}",
                     requires=requires.item(campaign_key_item, "50%"),
                 )
@@ -255,8 +262,8 @@ class DistanceWorldSpec(WorldSpec):
                         campaign_completion_item.data["name"]
                     ]
                 else:
-                    campaign_level_location.data["dont_place_item"] = [
-                        campaign_key_item.data["name"]
+                    campaign_level_location.data["dont_place_item_category"] = [
+                        campaign_key_category
                     ]
 
         self.location(
@@ -273,3 +280,5 @@ class DistanceWorldSpec(WorldSpec):
                 filler=True,
                 trap=True,
             )
+
+world_spec = DistanceWorldSpec()
