@@ -1,3 +1,4 @@
+import json
 import os
 from pathlib import Path
 import shutil
@@ -23,8 +24,8 @@ def generate_world(manual: ProjectManual):
         os.getenv("OUTPUT_FOLDER") or "C:/ProgramData/Archipelago/custom_worlds"
     )
 
-    game_spec = JsonGameSpec.from_json(
-        (manual.data_folder / "game.json").read_text("utf-8")
+    game_spec = JsonGameSpec.from_dict(
+        {"data": json.loads((manual.data_folder / "game.json").read_text("utf-8"))}
     )
     world_name = f"manual_{game_spec.name}_{game_spec.creator}"
 
