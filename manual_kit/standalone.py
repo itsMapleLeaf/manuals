@@ -4,12 +4,13 @@ from pathlib import Path
 import shutil
 from tempfile import TemporaryDirectory
 from dataclasses import dataclass, field
-from typing import Callable, Literal, Optional
+from typing import Callable, Literal, NotRequired, Optional, TypedDict, Unpack
 
 from ._util import JsonObject, compact, list_names_or_none, omit
 
 
-type RequireData = str | list[str]
+type RequirementData = str | list[str]
+type RequirementSubject = ItemSpec | CategorySpec
 
 
 @dataclass
@@ -79,44 +80,79 @@ class GameSpec:
             )
 
 
-@dataclass
 class LocationSpec:
-    name: str
-    """The unique name of the location."""
 
-    requires: str | None = None
-    """(Optional) A boolean logic string that describes the required items, counts, etc. needed to reach this location."""
+    class Args(TypedDict):
+        requires: NotRequired[
+            "str | RequirementSubject | tuple[RequirementSubject, str | int]"
+        ]
+        """(Optional) A boolean logic string that describes the required items, counts, etc. needed to reach this location."""
 
-    category: list["CategorySpec"] = field(default_factory=list)
-    """(Optional) A list of categories to be applied to this location."""
+        category: NotRequired["str | list[str] | CategorySpec"]
+        """(Optional) A list of categories to be applied to this location."""
 
-    region: "RegionSpec | None" = None
-    """(Optional) The name of the region this location is part of."""
+        region: NotRequired["RegionSpec"]
+        """(Optional) The name of the region this location is part of."""
 
-    place_item: list["ItemSpec"] = field(default_factory=list)
-    """(Optional) Places an item that matches one of the item names listed in this setting at this location. Does not check logical access to the location."""
+        place_item: NotRequired[list[str]]
+        """(Optional) Places an item that matches one of the item names listed in this setting at this location. Does not check logical access to the location."""
 
-    dont_place_item: list["ItemSpec"] = field(default_factory=list)
-    """(Optional) Configures what item names should not end up at this location during normal generation. Does not check logical access to the location."""
+        dont_place_item: NotRequired[list[str]]
+        """(Optional) Configures what item names should not end up at this location during normal generation. Does not check logical access to the location."""
 
-    place_item_category: list["CategorySpec"] = field(default_factory=list)
-    """(Optional) Places an item that matches at least one of the categories listed in this setting at this location. Does not check logical access to the location."""
+        place_item_category: NotRequired[list[str]]
+        """(Optional) Places an item that matches at least one of the categories listed in this setting at this location. Does not check logical access to the location."""
 
-    dont_place_item_category: list["CategorySpec"] = field(default_factory=list)
-    """(Optional) Configures what item categories should not end up at this location during normal generation. Does not check logical access to the location."""
+        dont_place_item_category: NotRequired[list[str]]
+        """(Optional) Configures what item categories should not end up at this location during normal generation. Does not check logical access to the location."""
 
-    victory = False
-    """(Optional) Is this location one of the possible goals of this Manual APWorld?"""
+        victory: NotRequired[bool]
+        """(Optional) Is this location one of the possible goals of this Manual APWorld?"""
 
-    prehint = False
-    """(Optional) Should this location be hinted at the start?"""
+        prehint: NotRequired[bool]
+        """(Optional) Should this location be hinted at the start?"""
 
-    hint_entrance = ""
-    """(Optional) Adds additional text to this location's hints to convey useful information. Typically used for entrance randomization."""
+        hint_entrance: NotRequired[bool]
+        """(Optional) Adds additional text to this location's hints to convey useful information. Typically used for entrance randomization."""
 
-    id: int | None = None
-    """(Optional) Skips the item ID forward to the given value.
-    This can be used to provide buffer space for future items."""
+        id: NotRequired[int]
+        """(Optional) Skips the item ID forward to the given value.
+        This can be used to provide buffer space for future items."""
+
+    def __init__(
+        self,
+        name: str,
+        **kwargs: Unpack[Args],
+    ) -> None:
+        self.name = name
+        """The unique name of the location."""
+        self.region = kwargs.get("region", None)
+        self.place_item = kwargs.get("place_item", None)
+        self.dont_place_item = kwargs.get("dont_place_item", None)
+        self.place_item_category = kwargs.get("place_item_category", None)
+        self.dont_place_item_category = kwargs.get("dont_place_item_category", None)
+        self.victory = kwargs.get("victory", None)
+        self.prehint = kwargs.get("prehint", None)
+        self.hint_entrance = kwargs.get("hint_entrance", None)
+        self.id = kwargs.get("id", None)
+
+        match kwargs.get("requires", None):
+            case ItemSpec(name=name):
+                self.requires = f"|{name}|"
+            case CategorySpec(name=name):
+                self.requires = f"|@{name}|"
+            case (ItemSpec(name=name), amount):
+                self.requires = f"|{name}:{amount}|"
+            case (CategorySpec(name=name), amount):
+                self.requires = f"|@{name}:{amount}|"
+            case requires:
+                self.requires = requires
+
+        match kwargs.get("category", None):
+            case CategorySpec(name=name):
+                self.category = name
+            case category:
+                self.category = category
 
     @property
     def data(self) -> JsonObject:
@@ -124,14 +160,12 @@ class LocationSpec:
             {
                 "name": self.name,
                 "requires": self.requires,
-                "category": list_names_or_none(self.category),
+                "category": self.category or None,
                 "region": self.region.name if self.region else None,
-                "place_item": list_names_or_none(self.place_item),
-                "dont_place_item": list_names_or_none(self.dont_place_item),
-                "place_item_category": list_names_or_none(self.place_item_category),
-                "dont_place_item_category": list_names_or_none(
-                    self.dont_place_item_category
-                ),
+                "place_item": self.place_item or None,
+                "dont_place_item": self.dont_place_item or None,
+                "place_item_category": self.place_item_category or None,
+                "dont_place_item_category": self.dont_place_item_category or None,
                 "victory": self.victory or None,
                 "prehint": self.prehint or None,
                 "hint_entrance": self.hint_entrance or None,
@@ -145,7 +179,7 @@ class ItemSpec:
     name: str
     """The unique name of the item. Do not use (), :, or | in the name"""
 
-    category: list["CategorySpec"] = field(default_factory=list)
+    category: str | list[str] = field(default_factory=list)
     """(Optional) A list of categories to be applied to this item."""
 
     count: int = field(default=1)
@@ -155,29 +189,29 @@ class ItemSpec:
     """(Optional) A dictionary of values this item has in the format {"name": int,"otherName": int}
     Used with the {ItemValue(Name: int)} in location requires eg. "value": {"coins":10} mean this item is worth 10 coins"""
 
-    progression = False
+    progression: bool = False
     """(Optional) Is this item needed to unlock locations? For more information on item classifications, see: https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md#items"""
 
-    progression_skip_balancing = False
+    progression_skip_balancing: bool = False
     """(Optional) Should this item not get included in progression balance swaps? For more information on item classifications, see: https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md#items"""
 
-    useful = False
+    useful: bool = False
     """(Optional) Is this item useful to have but not required to complete the game? For more information on item classifications, see: https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md#items"""
 
-    trap = False
+    trap: bool = False
     """(Optional) Is this item something the player doesn't want to get? For more information on item classifications, see: https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md#items"""
 
-    filler = False
+    filler: bool = False
     """(Optional) Is this item mostly useless and okay to skip placing sometimes? For more information on item classifications, see: https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md#items"""
 
     early: int | bool = False
     """(Optional) How many copies of this item are required to be placed somewhere accessible from the start (Sphere 1)
     Choosing 'True' mark all of them to be early"""
 
-    local = False
+    local: bool = False
     """(Optional) Are all copies of this item supposed to be only in your locations (true), or can they be anywhere (false)?"""
 
-    local_early = False
+    local_early: bool = False
     """(Optional) How many copies of this item (or 'true' if all copies) are supposed to be early and only in your locations.
     Can be used to mark some of the copies of an item to be early and local since 'local' is a toggle between none or all of them."""
 
@@ -194,7 +228,7 @@ class ItemSpec:
         return compact(
             {
                 "name": self.name,
-                "category": list_names_or_none(self.category),
+                "category": self.category,
                 "count": self.count if self.count != 1 else None,
                 "value": self.value or None,
                 "progression": self.progression or None,
