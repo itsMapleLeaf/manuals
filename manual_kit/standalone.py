@@ -419,7 +419,8 @@ class WorldSpec(GameSpec):
 
     @property
     def game_data(self) -> DataFile:
-        return self.DataFile("game.json", lambda: super().data)
+        self_super = super()
+        return self.DataFile("game.json", lambda: self_super.data)
 
     @property
     def categories_data(self) -> DataFile:
