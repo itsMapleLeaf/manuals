@@ -8,3 +8,19 @@
 ## manspect
 
 - [ ] daemon process for faster world reads
+
+## maintenance
+
+- [ ] ensure all functionality in scripts can be performed through the manage script, then delete the other scripts
+
+## manual_kit/standalone
+
+- [ ] finish the TODOS in the create_apworld_file function
+
+## manuals
+
+- [ ] convert all manuals into standalone manual generators in the `worlds` folder
+  - [-] distance
+  - [ ] orange juice
+  - [ ] sound voltex
+  - [ ] super monkey ball 2

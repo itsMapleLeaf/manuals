@@ -4,11 +4,10 @@ from pathlib import Path
 import shutil
 from tempfile import TemporaryDirectory
 from dataclasses import dataclass, field
-from dataclasses_json import DataClassJsonMixin
-from typing import Literal, Mapping, Optional, Protocol, Sequence
+from typing import Literal, Optional
 
-type JsonValue = JsonObject | Sequence[JsonValue] | str | int | float | bool | None
-type JsonObject = Mapping[str, JsonValue]
+from ._util import JsonObject, compact, list_names_or_none, omit
+
 
 type RequireData = str | list[str]
 
@@ -455,61 +454,51 @@ class WorldSpec(GameSpec):
     def item_count(self) -> int:
         return sum(item.count for item in self.items.values())
 
+    def create_apworld_file(
+        self,
+        output_dir=Path("C:/ProgramData/Archipelago/custom_worlds"),
+        files: dict[str, str] | None = None,
+    ) -> Path:
+        files = (files or {}).copy()
 
-def create_apworld_file(files: dict[str, str], output_dir=Path.cwd()) -> Path:
+        # TODO: add data json files
 
-    class JsonGameSpec(GameSpec, DataClassJsonMixin):
-        pass
+        from dataclasses_json import DataClassJsonMixin
 
-    manual_src_dir = Path(__file__).parent / "Manual/src"
+        class JsonGameSpec(GameSpec, DataClassJsonMixin):
+            pass
 
-    with TemporaryDirectory(prefix="manual_kit_standalone") as temp_root_dir:
-        temp_root_dir = Path(temp_root_dir)
-        temp_src_dir = temp_root_dir / "src"
+        # TODO: dynamically download manual dir to a user data directory,
+        # and also accept a path to an existing manual repo
+        manual_src_dir = Path(__file__).parent / "Manual/src"
 
-        shutil.copytree(manual_src_dir, temp_src_dir)
+        with TemporaryDirectory(prefix="manual_kit_standalone") as temp_root_dir:
+            temp_root_dir = Path(temp_root_dir)
+            temp_src_dir = temp_root_dir / "src"
 
-        for local_file_path, file_content in files.items():
-            file_path = Path(temp_src_dir / local_file_path)
-            os.makedirs(file_path.parent, exist_ok=True)
-            file_path.write_text(file_content)
+            shutil.copytree(manual_src_dir, temp_src_dir)
 
-        game_spec = JsonGameSpec.from_json(
-            Path(temp_src_dir / "data/game.json").read_bytes(),
-        )
+            for local_file_path, file_content in files.items():
+                file_path = Path(temp_src_dir / local_file_path)
+                os.makedirs(file_path.parent, exist_ok=True)
+                file_path.write_text(file_content)
 
-        world_identifier = f"manual_{game_spec.game}_{game_spec.creator}"
-        apworld_file = output_dir / f"{world_identifier}.apworld"
+            game_spec = JsonGameSpec.from_json(
+                Path(temp_src_dir / "data/game.json").read_bytes(),
+            )
 
-        shutil.move(temp_src_dir, temp_root_dir / world_identifier)
+            world_identifier = f"manual_{game_spec.game}_{game_spec.creator}"
+            apworld_file = output_dir / f"{world_identifier}.apworld"
 
-        world_zip = shutil.make_archive(
-            str(output_dir / world_identifier),
-            format="zip",
-            root_dir=temp_root_dir,
-            base_dir=".",
-        )
+            shutil.move(temp_src_dir, temp_root_dir / world_identifier)
 
-        shutil.move(world_zip, apworld_file)
+            world_zip = shutil.make_archive(
+                str(output_dir / world_identifier),
+                format="zip",
+                root_dir=temp_root_dir,
+                base_dir=".",
+            )
 
-    return apworld_file
+            shutil.move(world_zip, apworld_file)
 
-
-def omit[K, V](input: Mapping[K, V], *keys: K) -> dict[K, V]:
-    return {key: input[key] for key in keys}
-
-
-def compact[K, V](input: Mapping[K, V | None]) -> dict[K, V]:
-    return {k: v for k, v in input.items() if v != None}
-
-
-class Named(Protocol):
-    name: str
-
-
-def list_names(items: Sequence[Named]) -> list[str]:
-    return [item.name for item in items]
-
-
-def list_names_or_none(items: Sequence[Named] | None) -> list[str] | None:
-    return [item.name for item in items] if items else None
+        return apworld_file
