@@ -6,7 +6,7 @@ type JsonObject = Mapping[str, JsonValue]
 
 
 def omit[K, V](input: Mapping[K, V], *keys: K) -> dict[K, V]:
-    return {key: input[key] for key in keys}
+    return {key: input[key] for key in input if not key in keys}
 
 
 def compact[K, V](input: Mapping[K, V | None]) -> dict[K, V]:
