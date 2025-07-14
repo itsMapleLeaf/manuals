@@ -15,7 +15,7 @@
 
 ## manual_kit/standalone
 
-- [ ] finish the TODOS in the create_apworld_file function
+none!
 
 ## manuals
 

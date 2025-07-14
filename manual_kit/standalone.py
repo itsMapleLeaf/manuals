@@ -4,7 +4,7 @@ from pathlib import Path
 import shutil
 from tempfile import TemporaryDirectory
 from dataclasses import dataclass, field
-from typing import Literal, Optional
+from typing import Callable, Literal, Optional
 
 from ._util import JsonObject, compact, list_names_or_none, omit
 
@@ -23,7 +23,7 @@ class GameSpec:
     filler_item_name: str
     """Name of the filler items that get placed when there's no more real items to place."""
 
-    starting_items: list["StartingItemSpec"] = field(default_factory=list)
+    starting_items: list["StartingItem"] = field(default_factory=list)
     """(Optional) Starting inventory"""
 
     death_link = False
@@ -49,35 +49,34 @@ class GameSpec:
             }
         )
 
+    @dataclass
+    class StartingItem:
+        items: Optional[list["ItemSpec"]] = None
+        """(Optional) List of item to pick from. If not included will pick from 'item_categories' if present or from the entire item pool if absent"""
 
-@dataclass
-class StartingItemSpec:
-    items: Optional[list["ItemSpec"]] = None
-    """(Optional) List of item to pick from. If not included will pick from 'item_categories' if present or from the entire item pool if absent"""
+        item_categories: Optional[list["CategorySpec"]] = None
+        """(Optional) List of category of items to pick from. If not included will pick from 'items' if present or from the entire item pool if absent"""
 
-    item_categories: Optional[list["CategorySpec"]] = None
-    """(Optional) List of category of items to pick from. If not included will pick from 'items' if present or from the entire item pool if absent"""
+        random: Optional[int] = None
+        """(Optional) how many items of this block will be randomly added to inventory. Will add every item in the block if not included"""
 
-    random: Optional[int] = None
-    """(Optional) how many items of this block will be randomly added to inventory. Will add every item in the block if not included"""
+        if_previous_item: Optional[list["ItemSpec"]] = None
+        """(Optional) Causes the starting item block to only occur when any of the matching items have already been added to starting inventory by any previous starting item blocks"""
 
-    if_previous_item: Optional[list["ItemSpec"]] = None
-    """(Optional) Causes the starting item block to only occur when any of the matching items have already been added to starting inventory by any previous starting item blocks"""
+        yaml_option: Optional[list["ToggleOptionSpec"]] = None
+        """(Optional) Array of Options that will decide if this block is rolled"""
 
-    yaml_option: Optional[list["ToggleOptionSpec"]] = None
-    """(Optional) Array of Options that will decide if this block is rolled"""
-
-    @property
-    def data(self) -> JsonObject:
-        return compact(
-            {
-                "items": list_names_or_none(self.items),
-                "item_categories": list_names_or_none(self.item_categories),
-                "random": self.random,
-                "if_previous_item": list_names_or_none(self.if_previous_item),
-                "yaml_option": list_names_or_none(self.yaml_option),
-            }
-        )
+        @property
+        def data(self) -> JsonObject:
+            return compact(
+                {
+                    "items": list_names_or_none(self.items),
+                    "item_categories": list_names_or_none(self.item_categories),
+                    "random": self.random,
+                    "if_previous_item": list_names_or_none(self.if_previous_item),
+                    "yaml_option": list_names_or_none(self.yaml_option),
+                }
+            )
 
 
 @dataclass
@@ -304,51 +303,58 @@ class RangeOptionSpec(OptionSpec):
 
 @dataclass
 class MetaSpec:
-    docs: "MetaDocsSpec | None" = None
+    docs: "Docs | None" = None
     enable_region_diagram: bool | None = None
 
     @property
     def data(self) -> JsonObject:
         return compact(omit(dataclasses.asdict(self), "name"))
 
+    @dataclass
+    class Docs:
+        apworld_description: list[str] | None = None
+        web: "Web | None" = None
 
-@dataclass
-class MetaDocsSpec:
-    apworld_description: list[str] | None = None
-    web: "MetaDocsWebSpec | None" = None
+        @property
+        def data(self) -> JsonObject:
+            return compact(omit(dataclasses.asdict(self), "name"))
 
-    @property
-    def data(self) -> JsonObject:
-        return compact(omit(dataclasses.asdict(self), "name"))
+        @dataclass
+        class Web:
+            type Theme = Literal[
+                "dirt",
+                "grass",
+                "grassFlowers",
+                "ice",
+                "jungle",
+                "ocean",
+                "partyTime",
+                "stone",
+            ]
 
+            options_page: bool | str | None = None
+            game_info_languages: list[str] | None = None
+            theme: Theme | None = None
+            bug_report_page: str | None = None
+            tutorials: list[dict] | None = None
+            options_presets: list[dict] | None = None
 
-@dataclass
-class MetaDocsWebSpec:
-    type Theme = Literal[
-        "dirt",
-        "grass",
-        "grassFlowers",
-        "ice",
-        "jungle",
-        "ocean",
-        "partyTime",
-        "stone",
-    ]
-
-    options_page: bool | str | None = None
-    game_info_languages: list[str] | None = None
-    theme: Theme | None = None
-    bug_report_page: str | None = None
-    tutorials: list[dict] | None = None
-    options_presets: list[dict] | None = None
-
-    @property
-    def data(self) -> JsonObject:
-        return compact(omit(dataclasses.asdict(self), "name"))
+            @property
+            def data(self) -> JsonObject:
+                return compact(omit(dataclasses.asdict(self), "name"))
 
 
 @dataclass
 class WorldSpec(GameSpec):
+
+    @dataclass(frozen=True)
+    class DataFile:
+        filename: str
+        data_factory: Callable[[], JsonObject]
+
+        @property
+        def data(self) -> JsonObject:
+            return self.data_factory()
 
     def __post_init__(self) -> None:
         self.categories: dict[str, CategorySpec] = {}
@@ -408,69 +414,67 @@ class WorldSpec(GameSpec):
             return value
 
     @property
-    def data(self) -> JsonObject:
-        return {
-            "game": self.game_data,
-            "categories": self.categories_data,
-            "items": self.items_data,
-            "locations": self.locations_data,
-            "regions": self.regions_data,
-            "options": self.options_data,
-            "meta": self.meta_data,
-        }
-
-    @property
-    def game_data(self) -> JsonObject:
-        return super().data
-
-    @property
-    def categories_data(self) -> JsonObject:
-        return {name: spec.data for name, spec in self.categories.items()}
-
-    @property
-    def items_data(self) -> JsonObject:
-        return {"data": [spec.data for spec in self.items.values()]}
-
-    @property
-    def locations_data(self) -> JsonObject:
-        return {"data": [spec.data for spec in self.locations.values()]}
-
-    @property
-    def regions_data(self) -> JsonObject:
-        return {name: spec.data for name, spec in self.regions.items()}
-
-    @property
-    def options_data(self) -> JsonObject:
-        return {
-            "core": {name: opt.data for name, opt in self.core_options.items()},
-            "user": {name: opt.data for name, opt in self.user_options.items()},
-        }
-
-    @property
-    def meta_data(self) -> JsonObject:
-        return self.meta.data
-
-    @property
     def item_count(self) -> int:
         return sum(item.count for item in self.items.values())
+
+    @property
+    def game_data(self) -> DataFile:
+        return self.DataFile("game.json", lambda: super().data)
+
+    @property
+    def categories_data(self) -> DataFile:
+        return self.DataFile(
+            "categories.json",
+            lambda: {name: spec.data for name, spec in self.categories.items()},
+        )
+
+    @property
+    def items_data(self) -> DataFile:
+        return self.DataFile(
+            "items.json",
+            lambda: {"data": [spec.data for spec in self.items.values()]},
+        )
+
+    @property
+    def locations_data(self) -> DataFile:
+        return self.DataFile(
+            "locations.json",
+            lambda: {"data": [spec.data for spec in self.locations.values()]},
+        )
+
+    @property
+    def regions_data(self) -> DataFile:
+        return self.DataFile(
+            "regions.json",
+            lambda: {name: spec.data for name, spec in self.regions.items()},
+        )
+
+    @property
+    def options_data(self) -> DataFile:
+        return self.DataFile(
+            "options.json",
+            lambda: {
+                "core": {name: opt.data for name, opt in self.core_options.items()},
+                "user": {name: opt.data for name, opt in self.user_options.items()},
+            },
+        )
+
+    @property
+    def meta_data(self) -> DataFile:
+        return self.DataFile("meta.json", lambda: self.meta.data)
 
     def create_apworld_file(
         self,
         output_dir=Path("C:/ProgramData/Archipelago/custom_worlds"),
+        manual_src_dir=Path(__file__).parent / "Manual/src",
         files: dict[str, str] | None = None,
     ) -> Path:
         files = (files or {}).copy()
 
-        # TODO: add data json files
-
-        from dataclasses_json import DataClassJsonMixin
-
-        class JsonGameSpec(GameSpec, DataClassJsonMixin):
-            pass
-
-        # TODO: dynamically download manual dir to a user data directory,
-        # and also accept a path to an existing manual repo
-        manual_src_dir = Path(__file__).parent / "Manual/src"
+        if not manual_src_dir.exists():
+            raise FileNotFoundError(
+                f"Manual source directory not found: {manual_src_dir}"
+            )
 
         with TemporaryDirectory(prefix="manual_kit_standalone") as temp_root_dir:
             temp_root_dir = Path(temp_root_dir)
@@ -478,13 +482,43 @@ class WorldSpec(GameSpec):
 
             shutil.copytree(manual_src_dir, temp_src_dir)
 
+            data_dir = temp_src_dir / "data"
+            data_dir.mkdir(parents=True, exist_ok=True)
+
+            import json
+
+            all_data_files = [
+                self.game_data,
+                self.categories_data,
+                self.items_data,
+                self.locations_data,
+                self.regions_data,
+                self.options_data,
+                self.meta_data,
+            ]
+
+            for data_file in all_data_files:
+                (data_dir / data_file.filename).write_text(
+                    json.dumps(data_file.data, indent=2, ensure_ascii=False)
+                )
+
             for local_file_path, file_content in files.items():
                 file_path = Path(temp_src_dir / local_file_path)
                 os.makedirs(file_path.parent, exist_ok=True)
                 file_path.write_text(file_content)
 
+            from dataclasses_json import DataClassJsonMixin
+
+            class JsonGameSpec(GameSpec, DataClassJsonMixin):
+                pass
+
+            # while in most cases it would work to use `self.game` and `self.creator`,
+            # the filename of the apworld **has** to match what's in the game.json file,
+            # and the game.json file can be overridden by the `files` arg
+            # or changed through other means,
+            # so it effectively becomes the best source of truth
             game_spec = JsonGameSpec.from_json(
-                Path(temp_src_dir / "data/game.json").read_bytes(),
+                (data_dir / self.game_data.filename).read_text()
             )
 
             world_identifier = f"manual_{game_spec.game}_{game_spec.creator}"
@@ -499,6 +533,4 @@ class WorldSpec(GameSpec):
                 base_dir=".",
             )
 
-            shutil.move(world_zip, apworld_file)
-
-        return apworld_file
+        return Path(shutil.move(world_zip, apworld_file))
