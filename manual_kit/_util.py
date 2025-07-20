@@ -1,9 +1,11 @@
+from pathlib import Path
 from typing import Mapping, Protocol, Sequence
 
 type JsonValue = JsonObject | JsonArray | str | int | float | bool | None
 type JsonArray = Sequence[JsonValue]
 type JsonObject = Mapping[str, JsonValue]
 
+type StrPath = str | Path
 
 def omit[K, V](input: Mapping[K, V], *keys: K) -> dict[K, V]:
     return {key: input[key] for key in input if not key in keys}

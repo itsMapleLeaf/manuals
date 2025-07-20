@@ -1,12 +1,17 @@
-from dataclasses import dataclass
-from typing import Final
+import json
+from pathlib import Path
+from manual_kit.standalone import Requires, WorldSpec
 
 
-from manual_kit.standalone import ItemSpec, LocationSpec, WorldSpec
+def create_world_spec() -> WorldSpec:
+    spec = WorldSpec(
+        game="Distance",
+        creator="MapleLeaf",
+        filler_item_name="If you see this, there's a bug!",
+        starting_items=[{"item_categories": ["Arcade"], "random": 7}],
+    )
 
-
-class GameContent:
-    arcade: Final = {
+    arcade_levels = {
         "Ignition": [
             "Chroma",
             "Vector Valley",
@@ -129,9 +134,10 @@ class GameContent:
             "Continuum",
             "Escape",
         ],
+        # TODO: add challenge levels, probably
     }
 
-    campaigns: Final = {
+    campaign_levels = {
         "Adventure": [
             "Instantiation",
             "Cataclysm",
@@ -170,39 +176,7 @@ class GameContent:
         ],
     }
 
-
-@dataclass
-class ArcadeLevelSpec:
-    name: str
-    set_name: str
-
-    def __post_init__(self) -> None:
-        self.item = ItemSpec(
-            name=f"{self.set_name} - {self.name}",
-            category="Arcade",
-            progression=True,
-        )
-
-        self.locations = [
-            LocationSpec(
-                name=f"{self.item.name} - Sector {sector_index}",
-                category=["Arcade"],
-                requires=self.item,
-            )
-            for sector_index in range(2)
-        ]
-
-
-class DistanceWorldSpec(WorldSpec):
-    arcade_level_count: Final = sum(
-        len(level_list) for level_list in GameContent.arcade.values()
-    )
-
-    keys_per_campaign: Final[int] = (
-        arcade_level_count // len(GameContent.campaigns) // 2
-    )
-
-    filler_item_names: Final = [
+    filler_item_names = [
         "corruption error",
         "out of memory",
         "access violation",
@@ -218,75 +192,76 @@ class DistanceWorldSpec(WorldSpec):
         "fatal exception",
     ]
 
-    arcade_levels: Final = [
-        ArcadeLevelSpec(name=level_name, set_name=set_name)
-        for set_name, level_names in GameContent.arcade.items()
-        for level_name in level_names
-    ]
+    arcade_level_count = sum(len(level_list) for level_list in arcade_levels.values())
+    keys_per_campaign: int = arcade_level_count // len(campaign_levels) // 2
 
-    @staticmethod
-    def get_campaign_key_name(campaign_name: str):
-        return f"Decryption - {campaign_name}"
-
-    def __init__(self) -> None:
-        super().__init__(
-            game="Distance",
-            creator="MapleLeaf",
-            filler_item_name="If you see this, there's a bug!",
-        )
-
-        for arcade_level in self.arcade_levels:
-            self.items[arcade_level.item.name] = arcade_level.item
-            self.locations.update(
-                {location.name: location for location in arcade_level.locations}
+    for arcade_set_name, arcade_level_names in arcade_levels.items():
+        for arcade_level_name in arcade_level_names:
+            arcade_level_item = spec.define_item(
+                f"{arcade_set_name} - {arcade_level_name}",
+                category="Arcade",
+                progression=True,
             )
 
-        campaign_completion_item = self.item(
-            name=f"Campaign Completion",
-            category="Campaign Completion",
-            count=len(GameContent.campaigns),
+            for sector_index in range(2):
+                spec.define_location(
+                    f"{arcade_level_item['name']} - Sector {sector_index}",
+                    category=[f"Arcade - {arcade_level_item['name']}"],
+                    requires=Requires.item(arcade_level_item),
+                )
+
+    campaign_key_category = "Decryption"
+
+    campaign_completion_item = spec.define_item(
+        f"Campaign Completion",
+        category="Campaign Completion",
+        count=len(campaign_levels),
+        progression=True,
+    )
+
+    for campaign_name, campaign_level_names in campaign_levels.items():
+        campaign_key_item = spec.define_item(
+            f"Decryption - {campaign_name}",
+            category=campaign_key_category,
+            count=keys_per_campaign,
             progression=True,
         )
 
-        campaign_key_category = "Decryption"
-
-        for campaign_name, level_names in GameContent.campaigns.items():
-            campaign_key_item = self.item(
-                name=f"Decryption - {campaign_name}",
-                category=campaign_key_category,
-                count=self.keys_per_campaign,
-                progression=True,
-                local=True,
+        for level_index, level_name in enumerate(campaign_level_names):
+            campaign_level_location = spec.define_location(
+                f"{campaign_name} - {level_name}",
+                category=f"Campaign - {campaign_name}",
+                requires=Requires.item(campaign_key_item, "50%"),
             )
 
-            for level_index, level_name in enumerate(level_names):
-                campaign_level_location = self.location(
-                    name=f"{campaign_name} - {level_name}",
-                    category=f"Campaign - {campaign_name}",
-                    requires=(campaign_key_item, "50%"),
-                )
+            if level_index == len(campaign_level_names) - 1:
+                campaign_level_location["place_item"] = [
+                    campaign_completion_item["name"]
+                ]
+            else:
+                campaign_level_location["dont_place_item_category"] = [
+                    campaign_key_category
+                ]
 
-                if level_index == len(level_names) - 1:
-                    campaign_level_location.place_item = [campaign_completion_item.name]
-                else:
-                    campaign_level_location.dont_place_item_category = [
-                        campaign_key_category
-                    ]
+    spec.define_location(
+        "Campaign Completion Goal",
+        category="(Victory)",
+        requires=Requires.item(campaign_completion_item, "1"),
+        victory=True,
+    )
 
-        self.location(
-            name="Campaign Completion Goal",
-            category="(Victory)",
-            requires=(campaign_completion_item, "1"),
-            victory=True,
+    for filler_item_name in filler_item_names:
+        spec.define_item(
+            filler_item_name,
+            category="Filler",
+            filler=True,
+            trap=True,
         )
 
-        for filler_item_name in self.filler_item_names:
-            self.item(
-                filler_item_name,
-                category="Filler",
-                filler=True,
-                trap=True,
-            )
+    # most cursed shit I've ever seen
+    with open(Path(__file__).parent / "src/hooks/World.py.txt") as world_hooks_file:
+        spec.files["hooks/World.py"] = world_hooks_file.read().replace(
+            "%%filler_item_names%%", json.dumps(filler_item_names)
+        )
 
-
-world_spec = DistanceWorldSpec()
+    return spec

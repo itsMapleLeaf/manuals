@@ -1,20 +1,23 @@
-import dataclasses
 import os
 from pathlib import Path
 import shutil
 from tempfile import TemporaryDirectory
-from dataclasses import dataclass, field
-from typing import Callable, Literal, NotRequired, Optional, TypedDict, Unpack
+from dataclasses import dataclass
+from typing import (
+    Literal,
+    NotRequired,
+    TypedDict,
+    Unpack,
+)
 
-from ._util import JsonObject, compact, list_names_or_none, omit
+from .manspect import StrPath
 
 
 type RequirementData = str | list[str]
-type RequirementSubject = ItemSpec | CategorySpec
+type RequirementSubject = ItemData | CategoryData
 
 
-@dataclass
-class GameSpec:
+class GameData(TypedDict):
     game: str
     """The name of your game, compatible with capital letters."""
 
@@ -24,494 +27,408 @@ class GameSpec:
     filler_item_name: str
     """Name of the filler items that get placed when there's no more real items to place."""
 
-    starting_items: list["StartingItem"] = field(default_factory=list)
+    starting_items: list["StartingItemData"] | None
     """(Optional) Starting inventory"""
 
-    death_link = False
+    death_link: NotRequired[bool]
     """(Optional) Does your game support Deathlink?"""
 
-    starting_index: Optional[int] = None
+    starting_index: NotRequired[int]
     """(Optional) (Advanced) Choose the starting index for your locations and items."""
 
-    @property
-    def data(self) -> JsonObject:
-        return compact(
-            {
-                "game": self.game,
-                "creator": self.creator,
-                "filler_item_name": self.filler_item_name,
-                "starting_items": (
-                    [item.data for item in self.starting_items]
-                    if self.starting_items
-                    else None
-                ),
-                "death_link": self.death_link or None,
-                "starting_index": self.starting_index,
-            }
-        )
 
-    @dataclass
-    class StartingItem:
-        items: Optional[list["ItemSpec"]] = None
-        """(Optional) List of item to pick from. If not included will pick from 'item_categories' if present or from the entire item pool if absent"""
+class StartingItemData(TypedDict):
+    items: NotRequired[list[str]]
+    """(Optional) List of item to pick from. If not included will pick from 'item_categories' if present or from the entire item pool if absent"""
 
-        item_categories: Optional[list["CategorySpec"]] = None
-        """(Optional) List of category of items to pick from. If not included will pick from 'items' if present or from the entire item pool if absent"""
+    item_categories: NotRequired[list[str]]
+    """(Optional) List of category of items to pick from. If not included will pick from 'items' if present or from the entire item pool if absent"""
 
-        random: Optional[int] = None
-        """(Optional) how many items of this block will be randomly added to inventory. Will add every item in the block if not included"""
+    random: NotRequired[int]
+    """(Optional) how many items of this block will be randomly added to inventory. Will add every item in the block if not included"""
 
-        if_previous_item: Optional[list["ItemSpec"]] = None
-        """(Optional) Causes the starting item block to only occur when any of the matching items have already been added to starting inventory by any previous starting item blocks"""
+    if_previous_item: NotRequired[list[str]]
+    """(Optional) Causes the starting item block to only occur when any of the matching items have already been added to starting inventory by any previous starting item blocks"""
 
-        yaml_option: Optional[list["ToggleOptionSpec"]] = None
-        """(Optional) Array of Options that will decide if this block is rolled"""
-
-        @property
-        def data(self) -> JsonObject:
-            return compact(
-                {
-                    "items": list_names_or_none(self.items),
-                    "item_categories": list_names_or_none(self.item_categories),
-                    "random": self.random,
-                    "if_previous_item": list_names_or_none(self.if_previous_item),
-                    "yaml_option": list_names_or_none(self.yaml_option),
-                }
-            )
+    yaml_option: NotRequired[list[str]]
+    """(Optional) Array of Options that will decide if this block is rolled"""
 
 
-class LocationSpec:
+class LocationArgs(TypedDict):
+    requires: NotRequired[str]
+    """(Optional) A boolean logic string that describes the required items, counts, etc. needed to reach this location."""
 
-    class Args(TypedDict):
-        requires: NotRequired[
-            "str | RequirementSubject | tuple[RequirementSubject, str | int]"
-        ]
-        """(Optional) A boolean logic string that describes the required items, counts, etc. needed to reach this location."""
+    category: NotRequired[str | list[str]]
+    """(Optional) A list of categories to be applied to this location."""
 
-        category: NotRequired["str | list[str] | CategorySpec"]
-        """(Optional) A list of categories to be applied to this location."""
+    region: NotRequired[str]
+    """(Optional) The name of the region this location is part of."""
 
-        region: NotRequired["RegionSpec"]
-        """(Optional) The name of the region this location is part of."""
+    place_item: NotRequired[list[str]]
+    """(Optional) Places an item that matches one of the item names listed in this setting at this location. Does not check logical access to the location."""
 
-        place_item: NotRequired[list[str]]
-        """(Optional) Places an item that matches one of the item names listed in this setting at this location. Does not check logical access to the location."""
+    dont_place_item: NotRequired[list[str]]
+    """(Optional) Configures what item names should not end up at this location during normal generation. Does not check logical access to the location."""
 
-        dont_place_item: NotRequired[list[str]]
-        """(Optional) Configures what item names should not end up at this location during normal generation. Does not check logical access to the location."""
+    place_item_category: NotRequired[list[str]]
+    """(Optional) Places an item that matches at least one of the categories listed in this setting at this location. Does not check logical access to the location."""
 
-        place_item_category: NotRequired[list[str]]
-        """(Optional) Places an item that matches at least one of the categories listed in this setting at this location. Does not check logical access to the location."""
+    dont_place_item_category: NotRequired[list[str]]
+    """(Optional) Configures what item categories should not end up at this location during normal generation. Does not check logical access to the location."""
 
-        dont_place_item_category: NotRequired[list[str]]
-        """(Optional) Configures what item categories should not end up at this location during normal generation. Does not check logical access to the location."""
+    victory: NotRequired[bool]
+    """(Optional) Is this location one of the possible goals of this Manual APWorld?"""
 
-        victory: NotRequired[bool]
-        """(Optional) Is this location one of the possible goals of this Manual APWorld?"""
+    prehint: NotRequired[bool]
+    """(Optional) Should this location be hinted at the start?"""
 
-        prehint: NotRequired[bool]
-        """(Optional) Should this location be hinted at the start?"""
+    hint_entrance: NotRequired[bool]
+    """(Optional) Adds additional text to this location's hints to convey useful information. Typically used for entrance randomization."""
 
-        hint_entrance: NotRequired[bool]
-        """(Optional) Adds additional text to this location's hints to convey useful information. Typically used for entrance randomization."""
-
-        id: NotRequired[int]
-        """(Optional) Skips the item ID forward to the given value.
-        This can be used to provide buffer space for future items."""
-
-    def __init__(
-        self,
-        name: str,
-        **kwargs: Unpack[Args],
-    ) -> None:
-        self.name = name
-        """The unique name of the location."""
-        self.region = kwargs.get("region", None)
-        self.place_item = kwargs.get("place_item", None)
-        self.dont_place_item = kwargs.get("dont_place_item", None)
-        self.place_item_category = kwargs.get("place_item_category", None)
-        self.dont_place_item_category = kwargs.get("dont_place_item_category", None)
-        self.victory = kwargs.get("victory", None)
-        self.prehint = kwargs.get("prehint", None)
-        self.hint_entrance = kwargs.get("hint_entrance", None)
-        self.id = kwargs.get("id", None)
-
-        match kwargs.get("requires", None):
-            case ItemSpec(name=name):
-                self.requires = f"|{name}|"
-            case CategorySpec(name=name):
-                self.requires = f"|@{name}|"
-            case (ItemSpec(name=name), amount):
-                self.requires = f"|{name}:{amount}|"
-            case (CategorySpec(name=name), amount):
-                self.requires = f"|@{name}:{amount}|"
-            case requires:
-                self.requires = requires
-
-        match kwargs.get("category", None):
-            case CategorySpec(name=name):
-                self.category = name
-            case category:
-                self.category = category
-
-    @property
-    def data(self) -> JsonObject:
-        return compact(
-            {
-                "name": self.name,
-                "requires": self.requires,
-                "category": self.category or None,
-                "region": self.region.name if self.region else None,
-                "place_item": self.place_item or None,
-                "dont_place_item": self.dont_place_item or None,
-                "place_item_category": self.place_item_category or None,
-                "dont_place_item_category": self.dont_place_item_category or None,
-                "victory": self.victory or None,
-                "prehint": self.prehint or None,
-                "hint_entrance": self.hint_entrance or None,
-                "id": self.id,
-            }
-        )
-
-
-@dataclass
-class ItemSpec:
-    name: str
-    """The unique name of the item. Do not use (), :, or | in the name"""
-
-    category: str | list[str] = field(default_factory=list)
-    """(Optional) A list of categories to be applied to this item."""
-
-    count: int = field(default=1)
-    """(Optional) Total number of this item that will be in the itempool for randomization."""
-
-    value: dict[str, int] = field(default_factory=dict)
-    """(Optional) A dictionary of values this item has in the format {"name": int,"otherName": int}
-    Used with the {ItemValue(Name: int)} in location requires eg. "value": {"coins":10} mean this item is worth 10 coins"""
-
-    progression: bool = False
-    """(Optional) Is this item needed to unlock locations? For more information on item classifications, see: https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md#items"""
-
-    progression_skip_balancing: bool = False
-    """(Optional) Should this item not get included in progression balance swaps? For more information on item classifications, see: https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md#items"""
-
-    useful: bool = False
-    """(Optional) Is this item useful to have but not required to complete the game? For more information on item classifications, see: https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md#items"""
-
-    trap: bool = False
-    """(Optional) Is this item something the player doesn't want to get? For more information on item classifications, see: https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md#items"""
-
-    filler: bool = False
-    """(Optional) Is this item mostly useless and okay to skip placing sometimes? For more information on item classifications, see: https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md#items"""
-
-    early: int | bool = False
-    """(Optional) How many copies of this item are required to be placed somewhere accessible from the start (Sphere 1)
-    Choosing 'True' mark all of them to be early"""
-
-    local: bool = False
-    """(Optional) Are all copies of this item supposed to be only in your locations (true), or can they be anywhere (false)?"""
-
-    local_early: bool = False
-    """(Optional) How many copies of this item (or 'true' if all copies) are supposed to be early and only in your locations.
-    Can be used to mark some of the copies of an item to be early and local since 'local' is a toggle between none or all of them."""
-
-    id: int | None = None
+    id: NotRequired[int]
     """(Optional) Skips the item ID forward to the given value.
     This can be used to provide buffer space for future items."""
 
-    def __post_init__(self):
-        if self.count < 1:
-            raise Exception(f'Error in item "{self.name}": count must be at least 1')
 
-    @property
-    def data(self) -> JsonObject:
-        return compact(
-            {
-                "name": self.name,
-                "category": self.category,
-                "count": self.count if self.count != 1 else None,
-                "value": self.value or None,
-                "progression": self.progression or None,
-                "progression_skip_balancing": self.progression_skip_balancing or None,
-                "useful": self.useful or None,
-                "trap": self.trap or None,
-                "filler": self.filler or None,
-                "early": self.early or None,
-                "local": self.local or None,
-                "local_early": self.local_early or None,
-                "id": self.id,
-            }
-        )
-
-
-@dataclass
-class RegionSpec:
+class LocationData(LocationArgs):
     name: str
-    requires: str | None = None
-    connects_to: list[str] = field(default_factory=list)
-    starting: bool = False
-    exit_requires: dict[str, str] = field(default_factory=dict)
-    entrance_requires: dict[str, str] = field(default_factory=dict)
-
-    @property
-    def data(self) -> JsonObject:
-        return compact(
-            {
-                "name": self.name,
-                "requires": self.requires,
-                "connects_to": self.connects_to or None,
-                "starting": self.starting or None,
-                "exit_requires": self.exit_requires or None,
-                "entrance_requires": self.entrance_requires or None,
-            }
-        )
+    """The unique name of the location."""
 
 
-@dataclass
-class CategorySpec:
+class ItemArgs(TypedDict):
+    category: NotRequired[str | list[str]]
+    """(Optional) A list of categories to be applied to this item."""
+
+    count: NotRequired[int]
+    """(Optional) Total number of this item that will be in the itempool for randomization."""
+
+    value: NotRequired[dict[str, int]]
+    """(Optional) A dictionary of values this item has in the format {"name": int,"otherName": int}
+    Used with the {ItemValue(Name: int)} in location requires eg. "value": {"coins":10} mean this item is worth 10 coins"""
+
+    progression: NotRequired[bool]
+    """(Optional) Is this item needed to unlock locations? For more information on item classifications, see: https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md#items"""
+
+    progression_skip_balancing: NotRequired[bool]
+    """(Optional) Should this item not get included in progression balance swaps? For more information on item classifications, see: https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md#items"""
+
+    useful: NotRequired[bool]
+    """(Optional) Is this item useful to have but not required to complete the game? For more information on item classifications, see: https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md#items"""
+
+    trap: NotRequired[bool]
+    """(Optional) Is this item something the player doesn't want to get? For more information on item classifications, see: https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md#items"""
+
+    filler: NotRequired[bool]
+    """(Optional) Is this item mostly useless and okay to skip placing sometimes? For more information on item classifications, see: https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md#items"""
+
+    early: NotRequired[int | bool]
+    """(Optional) How many copies of this item are required to be placed somewhere accessible from the start (Sphere 1)
+    Choosing 'True' mark all of them to be early"""
+
+    local: NotRequired[bool]
+    """(Optional) Are all copies of this item supposed to be only in your locations (true), or can they be anywhere (false)?"""
+
+    local_early: NotRequired[bool]
+    """(Optional) How many copies of this item (or 'true' if all copies) are supposed to be early and only in your locations.
+    Can be used to mark some of the copies of an item to be early and local since 'local' is a toggle between none or all of them."""
+
+    id: NotRequired[int]
+    """(Optional) Skips the item ID forward to the given value.
+    This can be used to provide buffer space for future items."""
+
+
+class ItemData(ItemArgs):
     name: str
+    """The unique name of the item. Do not use (), :, or | in the name"""
 
-    hidden: Optional[bool] = None
+
+class RegionData(TypedDict):
+    requires: NotRequired[str]
+    connects_to: NotRequired[list[str]]
+    starting: NotRequired[bool]
+    exit_requires: NotRequired[dict[str, str]]
+    entrance_requires: NotRequired[dict[str, str]]
+
+
+class CategoryData(TypedDict):
+    hidden: NotRequired[bool]
     """(Optional) Should this category be Hidden in the client?"""
 
-    yaml_option: Optional[list["OptionSpec"]] = None
+    yaml_option: NotRequired[list[str]]
     """(Optional) Array of Options that will decide if the items & locations in this category are enabled"""
 
-    @property
-    def data(self) -> JsonObject:
-        return compact(omit(dataclasses.asdict(self), "name"))
 
-
-@dataclass(kw_only=True)
-class OptionSpec:
-    name: str = field(kw_only=False)
-    description: str | list[str] | None = None
+class OptionData(TypedDict):
+    description: NotRequired[str | list[str]]
     """Description text explaining what this option does"""
-    display_name: str | None = None
+    display_name: NotRequired[str]
     """The display name shown to users for this option"""
-    rich_text_doc: bool | None = None
+    rich_text_doc: NotRequired[bool]
     """Whether the description should be rendered as rich text"""
-    group: str | None = None
+    group: NotRequired[str]
     """The group this option belongs to in the UI"""
-    hidden: bool | None = None
+    hidden: NotRequired[bool]
     """Whether this option should be hidden from the UI"""
-    visibility: str | list[str] | int | None = None
+    visibility: NotRequired[str | list[str] | int]
     """Controls when this option is visible to users"""
 
-    @property
-    def data(self) -> JsonObject:
-        return compact(omit(dataclasses.asdict(self), "name"))
 
-
-@dataclass
-class ToggleOptionSpec(OptionSpec):
+class ToggleOptionData(OptionData):
     default: bool
     """The default value for this toggle option"""
 
 
-@dataclass
-class ChoiceOptionSpec(OptionSpec):
-    ## TODO: nicer API for this
+class ChoiceOptionData(OptionData):
     values: dict[str, int]
     """Mapping of choice names to their corresponding values"""
     default: int
     """The default value for this choice option"""
-    aliases: dict[str, int | str] | None = None
+    aliases: NotRequired[dict[str, int | str]]
     """Alternative names that map to the same choices"""
-    allow_custom_value: bool | None = None
+    allow_custom_value: NotRequired[bool]
     """Whether users can input custom values not in the predefined choices"""
 
 
-@dataclass
-class RangeOptionSpec(OptionSpec):
-    name: str
+class RangeOptionData(OptionData):
     range_start: int
     """The minimum value allowed for this range"""
     range_end: int
     """The maximum value allowed for this range"""
     default: int
     """The default value for this range option"""
-    values: dict[str, int] | None = None
+    values: NotRequired[dict[str, int]]
     """Optional mapping of named values within the range"""
 
 
-@dataclass
-class MetaSpec:
-    docs: "Docs | None" = None
-    enable_region_diagram: bool | None = None
-
-    @property
-    def data(self) -> JsonObject:
-        return compact(omit(dataclasses.asdict(self), "name"))
-
-    @dataclass
-    class Docs:
-        apworld_description: list[str] | None = None
-        web: "Web | None" = None
-
-        @property
-        def data(self) -> JsonObject:
-            return compact(omit(dataclasses.asdict(self), "name"))
-
-        @dataclass
-        class Web:
-            type Theme = Literal[
-                "dirt",
-                "grass",
-                "grassFlowers",
-                "ice",
-                "jungle",
-                "ocean",
-                "partyTime",
-                "stone",
-            ]
-
-            options_page: bool | str | None = None
-            game_info_languages: list[str] | None = None
-            theme: Theme | None = None
-            bug_report_page: str | None = None
-            tutorials: list[dict] | None = None
-            options_presets: list[dict] | None = None
-
-            @property
-            def data(self) -> JsonObject:
-                return compact(omit(dataclasses.asdict(self), "name"))
+class MetaData(TypedDict):
+    docs: NotRequired["MetaDocsConfig"]
+    enable_region_diagram: NotRequired[bool]
 
 
-@dataclass
-class WorldSpec(GameSpec):
+class MetaDocsConfig(TypedDict):
+    apworld_description: NotRequired[list[str] | None]
+    web: NotRequired["MetaDocsWebConfig | None"]
 
-    @dataclass(frozen=True)
-    class DataFile:
-        filename: str
-        data_factory: Callable[[], JsonObject]
 
-        @property
-        def data(self) -> JsonObject:
-            return self.data_factory()
+type MetaDocsWebTheme = Literal[
+    "dirt",
+    "grass",
+    "grassFlowers",
+    "ice",
+    "jungle",
+    "ocean",
+    "partyTime",
+    "stone",
+]
 
-    def __post_init__(self) -> None:
-        self.categories: dict[str, CategorySpec] = {}
-        self.items: dict[str, "ItemSpec"] = {}
-        self.locations: dict[str, LocationSpec] = {}
-        self.regions: dict[str, RegionSpec] = {}
-        self.core_options: dict[str, OptionSpec] = {}
-        self.user_options: dict[str, OptionSpec] = {}
-        self.meta = MetaSpec()
 
-        # these internal classes allow reusing the exact signature of the corresponding item classes
-        # for factory methods which add the spec objects to the corresponding collection
-        #
-        # the alternative is writing methods which copy each field, their types, their doc comments, etc.
-        # which is significantly more gross and bad and error-prone than this
-        #
-        # just give me typescript's `Parameters<>` and I'll be happy :)
+class MetaDocsWebConfig(TypedDict):
+    options_page: NotRequired[bool | str]
+    game_info_languages: NotRequired[list[str]]
+    theme: NotRequired[MetaDocsWebTheme]
+    bug_report_page: NotRequired[str]
+    tutorials: NotRequired[list[dict]]
+    options_presets: NotRequired[list[dict]]
 
-        parent_self = self
 
-        class BoundCategorySpec(CategorySpec):
-            def __post_init__(self):
-                set_unique(parent_self.categories, self.name, self)
+class Requires:
+    type ItemInput = str | ItemData
 
-        class BoundItemSpec(ItemSpec):
-            def __post_init__(self):
-                set_unique(parent_self.items, self.name, self)
+    @staticmethod
+    def item(
+        item: ItemInput, amount: str | int | Literal["all", "half"] | None = None
+    ) -> str:
+        result = Requires.__as_item_name(item)
 
-        class BoundLocationSpec(LocationSpec):
-            def __post_init__(self):
-                set_unique(parent_self.locations, self.name, self)
+        if amount != None:
+            result = f"{result}:{amount}"
 
-        class BoundRegionSpec(RegionSpec):
-            def __post_init__(self):
-                set_unique(parent_self.regions, self.name, self)
+        return f"|{result}|"
 
-        class BoundUserOptionSpec(OptionSpec):
-            def __post_init__(self):
-                set_unique(parent_self.user_options, self.name, self)
+    @staticmethod
+    def category(
+        name: str, amount: str | int | Literal["all", "half"] | None = None
+    ) -> str:
+        result = name
 
-        class BoundCoreOptionSpec(OptionSpec):
-            def __post_init__(self):
-                set_unique(parent_self.core_options, self.name, self)
+        if amount != None:
+            result = f"{result}:{amount}"
 
-        self.category = BoundCategorySpec
-        self.item = BoundItemSpec
-        self.location = BoundLocationSpec
-        self.region = BoundRegionSpec
-        self.user_option = BoundUserOptionSpec
-        self.core_option = BoundCoreOptionSpec
+        return f"|@{result}|"
 
-        def set_unique[T](items: dict[str, T], key: str, value: T) -> T:
-            if key in items:
-                raise Exception(f"{key} already exists")
+    @staticmethod
+    def any_of(*inputs: str) -> str:
+        exp = " or ".join(inputs)
+        return f"({exp})"
 
-            items[key] = value
-            return value
+    @staticmethod
+    def all_of(*inputs: str) -> str:
+        exp = " and ".join(inputs)
+        return f"({exp})"
+
+    @staticmethod
+    def func(name: str, args: str) -> str:
+        result = f"{name}({args})"
+        return "{%s}" % result  # avoiding format string here for clarity
+
+    @staticmethod
+    def item_value(key: str, count: int) -> str:
+        return Requires.func("ItemValue", f"{key}:{count}")
+
+    @staticmethod
+    def existing(item: ItemInput) -> str:
+        return Requires.func("OptOne", Requires.__as_item_name(item))
+
+    @staticmethod
+    def all_existing(input: str) -> str:
+        return Requires.func("OptAll", input)
+
+    @staticmethod
+    def enabled_option(name: str) -> str:
+        return Requires.func("YamlEnabled", name)
+
+    @staticmethod
+    def disabled_option(name: str) -> str:
+        return Requires.func("YamlDisabled", name)
+
+    @staticmethod
+    def option_expression(
+        option_name: str,
+        operator: Literal["==", "!=", ">=", "<=", ">", "<"],
+        value: str | int | bool,
+    ) -> str:
+        return Requires.func("YamlCompare", f"{option_name} {operator} {value}")
+
+    @staticmethod
+    def __as_item_name(item_input: ItemInput) -> str:
+        return item_input if isinstance(item_input, str) else item_input["name"]
+
+
+class WorldSpec:
+    def __init__(self, **kwargs: Unpack[GameData]) -> None:
+        self.game: GameData = kwargs
+        self.items: list[ItemData] = []
+        self.locations: list[LocationData] = []
+        self.categories: dict[str, CategoryData] = {}
+        self.regions: dict[str, RegionData] = {}
+        self.core_options: dict[str, OptionData] = {}
+        self.user_options: dict[str, OptionData] = {}
+        self.meta = MetaData()
+        self.files: dict[str, str] = {}
 
     @property
     def item_count(self) -> int:
-        return sum(item.count for item in self.items.values())
+        return sum(item.get("count", 1) for item in self.items)
 
-    @property
-    def game_data(self) -> DataFile:
-        self_super = super()
-        return self.DataFile("game.json", lambda: self_super.data)
+    def define_item(self, name: str, **args: Unpack[ItemArgs]) -> ItemData:
+        if any(item["name"] == name for item in self.items):
+            raise Exception(f"Item {name} defined twice")
 
-    @property
-    def categories_data(self) -> DataFile:
-        return self.DataFile(
-            "categories.json",
-            lambda: {name: spec.data for name, spec in self.categories.items()},
-        )
+        data = ItemData(name=name, **args)
+        self.items += [data]
+        return data
 
-    @property
-    def items_data(self) -> DataFile:
-        return self.DataFile(
-            "items.json",
-            lambda: {"data": [spec.data for spec in self.items.values()]},
-        )
+    def define_location(self, name: str, **args: Unpack[LocationArgs]) -> LocationData:
+        if any(location["name"] == name for location in self.locations):
+            raise Exception(f"Location {name} defined twice")
 
-    @property
-    def locations_data(self) -> DataFile:
-        return self.DataFile(
-            "locations.json",
-            lambda: {"data": [spec.data for spec in self.locations.values()]},
-        )
+        data = LocationData(name=name, **args)
+        self.locations += [data]
+        return data
 
-    @property
-    def regions_data(self) -> DataFile:
-        return self.DataFile(
-            "regions.json",
-            lambda: {name: spec.data for name, spec in self.regions.items()},
-        )
+    def define_category(
+        self, name: str, **data: Unpack[CategoryData]
+    ) -> tuple[CategoryData, str]:
+        return self.__set_unique("Category", self.categories, name, data), name
 
-    @property
-    def options_data(self) -> DataFile:
-        return self.DataFile(
+    def define_region(
+        self, name: str, **data: Unpack[RegionData]
+    ) -> tuple[RegionData, str]:
+        return self.__set_unique("Region", self.regions, name, data), name
+
+    def define_user_option(
+        self, name: str, **data: Unpack[OptionData]
+    ) -> tuple[OptionData, str]:
+        return self.__set_unique("User option", self.user_options, name, data), name
+
+    def define_core_option(
+        self, name: str, **data: Unpack[OptionData]
+    ) -> tuple[OptionData, str]:
+        return self.__set_unique("Core option", self.core_options, name, data), name
+
+    @staticmethod
+    def __set_unique[T](
+        item_type_name: str, items: dict[str, T], key: str, value: T
+    ) -> T:
+        if key in items:
+            raise Exception(f'{item_type_name} "{key}" defined twice')
+
+        items[key] = value
+        return value
+
+    @dataclass(frozen=True)
+    class DataFileInfo:
+        name: str
+        data: object
+
+    def game_file(self):
+        return self.DataFileInfo("game.json", self.game)
+
+    def categories_file(self):
+        return self.DataFileInfo("categories.json", self.categories)
+
+    def items_file(self):
+        return self.DataFileInfo("items.json", {"data": self.items})
+
+    def locations_file(self):
+        return self.DataFileInfo("locations.json", {"data": self.locations})
+
+    def regions_file(self):
+        return self.DataFileInfo("regions.json", self.regions)
+
+    def options_file(self):
+        return self.DataFileInfo(
             "options.json",
-            lambda: {
-                "core": {name: opt.data for name, opt in self.core_options.items()},
-                "user": {name: opt.data for name, opt in self.user_options.items()},
-            },
+            {"user": self.user_options, "core": self.core_options},
         )
 
-    @property
-    def meta_data(self) -> DataFile:
-        return self.DataFile("meta.json", lambda: self.meta.data)
+    def meta_file(self):
+        return self.DataFileInfo("meta.json", self.meta)
+
+    def data_files(self):
+        return [
+            self.game_file(),
+            self.categories_file(),
+            self.items_file(),
+            self.locations_file(),
+            self.regions_file(),
+            self.options_file(),
+            self.meta_file(),
+        ]
 
     def create_apworld_file(
         self,
-        output_dir=Path("C:/ProgramData/Archipelago/custom_worlds"),
         manual_src_dir=Path(__file__).parent / "Manual/src",
-        files: dict[str, str] | None = None,
+        apworld_contents_temp_dir: StrPath | None = None,
+        apworld_output_dir: StrPath = Path("C:/ProgramData/Archipelago/custom_worlds"),
+        preserve_apworld_contents_temp_dir=False,
     ) -> Path:
-        files = (files or {}).copy()
+        def ensure_dir(input: StrPath) -> Path:
+            path = Path(input)
+            path.mkdir(parents=True, exist_ok=True)
+            return path
 
-        if not manual_src_dir.exists():
-            raise FileNotFoundError(
-                f"Manual source directory not found: {manual_src_dir}"
-            )
+        manual_src_dir = ensure_dir(manual_src_dir)
+        apworld_output_dir = ensure_dir(apworld_output_dir)
 
-        with TemporaryDirectory(prefix="manual_kit_standalone") as temp_root_dir:
+        if apworld_contents_temp_dir != None:
+            apworld_contents_temp_dir = ensure_dir(apworld_contents_temp_dir)
+
+        with TemporaryDirectory(
+            dir=apworld_contents_temp_dir,
+            prefix="manual_kit_",
+            delete=not preserve_apworld_contents_temp_dir,
+        ) as temp_root_dir:
             temp_root_dir = Path(temp_root_dir)
             temp_src_dir = temp_root_dir / "src"
 
@@ -522,47 +439,32 @@ class WorldSpec(GameSpec):
 
             import json
 
-            all_data_files = [
-                self.game_data,
-                self.categories_data,
-                self.items_data,
-                self.locations_data,
-                self.regions_data,
-                self.options_data,
-                self.meta_data,
-            ]
+            for data_file_info in self.data_files():
+                with open(data_dir / data_file_info.name, "w") as data_file:
+                    json.dump(
+                        data_file_info.data, data_file, indent=2, ensure_ascii=False
+                    )
 
-            for data_file in all_data_files:
-                (data_dir / data_file.filename).write_text(
-                    json.dumps(data_file.data, indent=2, ensure_ascii=False)
-                )
-
-            for local_file_path, file_content in files.items():
+            for local_file_path, file_content in self.files.items():
                 file_path = Path(temp_src_dir / local_file_path)
                 os.makedirs(file_path.parent, exist_ok=True)
                 file_path.write_text(file_content)
-
-            from dataclasses_json import DataClassJsonMixin
-
-            class JsonGameSpec(GameSpec, DataClassJsonMixin):
-                pass
 
             # while in most cases it would work to use `self.game` and `self.creator`,
             # the filename of the apworld **has** to match what's in the game.json file,
             # and the game.json file can be overridden by the `files` arg
             # or changed through other means,
             # so it effectively becomes the best source of truth
-            game_spec = JsonGameSpec.from_json(
-                (data_dir / self.game_data.filename).read_text()
-            )
+            with open(data_dir / self.game_file().name, "r") as game_file:
+                game_data = GameData(json.load(game_file))
 
-            world_identifier = f"manual_{game_spec.game}_{game_spec.creator}"
-            apworld_file = output_dir / f"{world_identifier}.apworld"
+            world_identifier = f"manual_{game_data['game']}_{game_data['creator']}"
+            apworld_file = Path(apworld_output_dir) / f"{world_identifier}.apworld"
 
             shutil.move(temp_src_dir, temp_root_dir / world_identifier)
 
             world_zip = shutil.make_archive(
-                str(output_dir / world_identifier),
+                str(Path(apworld_output_dir) / world_identifier),
                 format="zip",
                 root_dir=temp_root_dir,
                 base_dir=".",
